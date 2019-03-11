@@ -20,10 +20,10 @@ type GormLogrus struct {
 // Print implements the gorm.LogWriter interface, courtesy of https://gist.github.com/bnadland/2e4287b801a47dcfcc94.
 func (g GormLogrus) Print(v ...interface{}) {
 	if v[0] == "sql" {
-		g.WithFields(observance.Fields{"source": "service-setup/database"}).Debug(fmt.Sprintf("%v - %v", v[3], v[4]))
+		g.WithFields(observance.Fields{"source": "go-service-toolkit/database"}).Debug(fmt.Sprintf("%v - %v", v[3], v[4]))
 	}
 	if v[0] == "log" {
-		g.WithFields(observance.Fields{"source": "service-setup/database"}).Debug(fmt.Sprintf("%v", v[2]))
+		g.WithFields(observance.Fields{"source": "go-service-toolkit/database"}).Debug(fmt.Sprintf("%v", v[2]))
 	}
 }
 

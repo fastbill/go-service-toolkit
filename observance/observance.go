@@ -1,8 +1,16 @@
 package observance
 
 import (
+	"fmt"
 	"net/http"
+	"runtime/debug"
 	"time"
+)
+
+// These variables define which headers are checked for finding the request and account id.
+var (
+	RequestIDHeader = "Fastbill-Outer-RequestId"
+	AccountIDHeader = "Fastbill-AccountId"
 )
 
 // Config contains all config variables for setting up observability (logging, metrics).
@@ -52,13 +60,22 @@ func (o *Obs) CopyWithRequest(r *http.Request) *Obs {
 	obs.Logger = obs.Logger.WithFields(Fields{
 		"url":       r.RequestURI,
 		"method":    r.Method,
-		"requestId": r.Header.Get("Fastbill-Outer-RequestId"),
+		"requestId": r.Header.Get(RequestIDHeader),
 	})
 
-	accountID := r.Header.Get("Fastbill-AccountId")
+	accountID := r.Header.Get(AccountIDHeader)
 	if accountID != "" {
 		obs.Logger = obs.Logger.WithField("accountId", accountID)
 	}
 
 	return obs
+}
+
+// PanicRecover can be used to recover panics in the main thread and log the messages.
+func (o *Obs) PanicRecover() {
+	if r := recover(); r != nil {
+		// According to Russ Cox (leader of the Go team) capturing the stack trace here works:
+		// https://groups.google.com/d/msg/golang-nuts/MB8GyW5j2UY/m_YYy7mGYbIJ .
+		o.Logger.WithField("stack", string(debug.Stack())).Error(fmt.Sprintf("%v", r))
+	}
 }

@@ -23,6 +23,7 @@ type Cache interface {
 	SetJSON(key string, value interface{}, expiration time.Duration) error
 	GetJSON(key string, result interface{}) error
 	Del(key string) error
+	Close() error
 }
 
 // RedisClient wraps the REDIS client to provide an implementation of the Cache interface.
@@ -118,6 +119,11 @@ func (r *RedisClient) GetJSON(key string, result interface{}) error {
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) Del(key string) error {
 	return r.Redis.Del(r.prefixedKey(key)).Err()
+}
+
+// Close closes the connection to the REDIS server.
+func (r *RedisClient) Close() error {
+	return r.Redis.Close()
 }
 
 // prefixedKey adds the prefix in front of the key separated with ":".

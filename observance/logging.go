@@ -1,10 +1,8 @@
 package observance
 
 import (
-	"fmt"
 	"io"
 	"os"
-	"runtime/debug"
 	"time"
 
 	logrusSentry "github.com/evalphobia/logrus_sentry"
@@ -26,15 +24,6 @@ type Logger interface {
 
 // Fields is a type alias to ease reading.
 type Fields = map[string]interface{}
-
-// PanicRecover can be used to recover panics in the main thread and log the messages.
-func PanicRecover(logger Logger) {
-	if r := recover(); r != nil {
-		// According to Russ Cox (leader of the Go team) capturing the stack trace here works:
-		// https://groups.google.com/d/msg/golang-nuts/MB8GyW5j2UY/m_YYy7mGYbIJ .
-		logger.WithField("stack", string(debug.Stack())).Error(fmt.Sprintf("%v", r))
-	}
-}
 
 // LogrusLogger wraps Logrus to provide an implementation of the Logger interface.
 type LogrusLogger struct {

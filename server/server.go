@@ -19,6 +19,8 @@ import (
 
 const defaultTimeout = 30 * time.Second
 
+var defaultBinder = echo.DefaultBinder{}
+
 // New creates an echo server instance with the given logger, CORS middleware if CORSOrigins was supplied
 // and optionally a timeout setting that is applied for read and write.
 func New(logger observance.Logger, CORSOrigins string, timeout ...string) (*echo.Echo, chan struct{}, error) {
@@ -128,7 +130,7 @@ func isHTTPOrEchoError(err error) bool {
 type bindValidator struct{}
 
 func (b *bindValidator) Bind(i interface{}, c echo.Context) error {
-	err := c.Bind(i)
+	err := defaultBinder.Bind(i, c)
 	if err != nil {
 		return err
 	}
