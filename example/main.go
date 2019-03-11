@@ -72,7 +72,7 @@ func main() {
 			return c.JSON(http.StatusBadRequest, map[string]string{"msg": err.Error()})
 		}
 
-		if err := db.Save(newUser).Error; err != nil {
+		if err = db.Save(newUser).Error; err != nil {
 			obs.Logger.WithError(err).Error("failed to save user to DB")
 			return c.JSON(http.StatusInternalServerError, map[string]string{"msg": err.Error()})
 		}

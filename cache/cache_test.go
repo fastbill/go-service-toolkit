@@ -107,6 +107,7 @@ func TestGetBool(t *testing.T) {
 			err := redis.Set("testPrefix:someKey", "true")
 			assert.NoError(t, err)
 			result, err := client.GetBool("someKey")
+			assert.NoError(t, err)
 			assert.True(t, result)
 		})
 	})

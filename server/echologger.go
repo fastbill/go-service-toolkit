@@ -78,7 +78,7 @@ func (l Logger) Fatalj(j log.JSON) {
 
 // Error implements echo.Logger#Error.
 func (l Logger) Error(i ...interface{}) {
-	l.Error(fmt.Sprintf("%v", i))
+	l.Logger.Error(fmt.Sprintf("%v", i))
 }
 
 // Errorf implements echo.Logger#Errorf.
@@ -93,7 +93,7 @@ func (l Logger) Errorj(j log.JSON) {
 
 // Warn implements echo.Logger#Warn.
 func (l Logger) Warn(i ...interface{}) {
-	l.Warn(fmt.Sprintf("%v", i))
+	l.Logger.Warn(fmt.Sprintf("%v", i))
 }
 
 // Warnf implements echo.Logger#Warnf.
@@ -108,7 +108,7 @@ func (l Logger) Warnj(j log.JSON) {
 
 // Info implements echo.Logger#Info.
 func (l Logger) Info(i ...interface{}) {
-	l.Info(fmt.Sprintf("%v", i))
+	l.Logger.Info(fmt.Sprintf("%v", i))
 }
 
 // Infof implements echo.Logger#Infof.
@@ -123,7 +123,7 @@ func (l Logger) Infoj(j log.JSON) {
 
 // Debug implements echo.Logger#Debug.
 func (l Logger) Debug(i ...interface{}) {
-	l.Debug(fmt.Sprintf("%v", i))
+	l.Logger.Debug(fmt.Sprintf("%v", i))
 }
 
 // Debugf implements echo.Logger#Debugf.
