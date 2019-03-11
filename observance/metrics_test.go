@@ -70,10 +70,10 @@ func TestMetricTypes(t *testing.T) {
 				w.WriteHeader(http.StatusAccepted)
 			}))
 			defer ts.Close()
-			m = NewPrometheusMetrics(ts.URL, "test-app", 5*time.Millisecond, testLogger())
+			m = NewPrometheusMetrics(ts.URL, "test-app", 50*time.Millisecond, testLogger())
 
 			test.fn("test_metric")
-			time.Sleep(10 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 			assert.Equal(t, uint64(1), atomic.LoadUint64(&callCounter))
 		})
 	}
