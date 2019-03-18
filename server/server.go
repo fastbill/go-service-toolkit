@@ -40,6 +40,7 @@ func New(logger observance.Logger, CORSOrigins string, timeout ...string) (*echo
 	echoServer.HidePort = true
 	echoServer.Server.ReadTimeout = timeoutDuration
 	echoServer.Server.WriteTimeout = timeoutDuration
+	echoServer.Server.ReadHeaderTimeout = timeoutDuration
 	echoServer.HTTPErrorHandler = HTTPErrorHandler(logger)
 	echoServer.Binder = &bindValidator{}
 	echoServer.Validator = NewValidator()
