@@ -22,11 +22,11 @@ func main() {
 
 	// Set up observance (logging).
 	obsConfig := toolkit.ObsConfig{
-		AppName:              "my-test-app",
-		LogLevel:             "debug",
-		SentryURL:            "", // insert your Sentry DSN
-		Version:              "1.0.0",
-		MetricsURL:           "", // insert the URL of the Prometheus Pushgateway
+		AppName:              os.Getenv("APP_NAME"),
+		LogLevel:             os.Getenv("LOG_LEVEL"),
+		SentryURL:            os.Getenv("SENTRY_URL"),
+		Version:              os.Getenv("APP_VERSION"),
+		MetricsURL:           os.Getenv("METRICS_URL"),
 		MetricsFlushInterval: 1 * time.Second,
 	}
 	obs := toolkit.MustNewObs(obsConfig)
@@ -34,12 +34,12 @@ func main() {
 
 	// Set up DB connection and run migrations.
 	dbConfig := toolkit.DBConfig{
-		Dialect:  "mysql",
-		Host:     "localhost",
-		Port:     "3310",
-		User:     "root",
-		Password: "my-secret-pw",
-		Name:     "test-db",
+		Dialect:  os.Getenv("DB_DIALECT"),
+		Host:     os.Getenv("DATABASE_HOST"),
+		Port:     os.Getenv("DATABASE_PORT"),
+		User:     os.Getenv("DATABASE_USER"),
+		Password: os.Getenv("DATABASE_PASSWORD"),
+		Name:     os.Getenv("DATABASE_NAME"),
 	}
 	db := toolkit.MustSetupDB(dbConfig, obs.Logger)
 	defer func() {
@@ -51,7 +51,7 @@ func main() {
 	toolkit.MustEnsureDBMigrations("migrations", dbConfig)
 
 	// Set up REDIS cache.
-	cache := toolkit.MustNewCache("localhost", "6400", "testPrefix")
+	cache := toolkit.MustNewCache(os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"), "testPrefix")
 	defer func() {
 		if err := cache.Close(); err != nil {
 			obs.Logger.WithError(err).Error("failed to close REDIS connection")

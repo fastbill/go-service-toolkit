@@ -141,7 +141,7 @@ func main() {
 	
 	// Set up routes etc.
 
-	err := e.Start(":8080")
+	err := echoServer.Start(":8080")
 	if err != nil {
 		obs.Logger.Warn(err)
 	}
