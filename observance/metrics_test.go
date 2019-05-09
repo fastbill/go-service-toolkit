@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	logrustest "github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +22,7 @@ func TestNewPrometheusMetrics(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		m := NewPrometheusMetrics(ts.URL, "test-app", 5*time.Millisecond, testLogger())
+		m := NewPrometheusMetrics(ts.URL, "test-app", 5*time.Millisecond, NewTestLogger())
 
 		for i := 0; i < 12; i++ {
 			m.Increment("test_metric")
@@ -70,7 +69,7 @@ func TestMetricTypes(t *testing.T) {
 				w.WriteHeader(http.StatusAccepted)
 			}))
 			defer ts.Close()
-			m = NewPrometheusMetrics(ts.URL, "test-app", 50*time.Millisecond, testLogger())
+			m = NewPrometheusMetrics(ts.URL, "test-app", 70*time.Millisecond, NewTestLogger())
 
 			test.fn("test_metric")
 			time.Sleep(100 * time.Millisecond)
@@ -81,14 +80,6 @@ func TestMetricTypes(t *testing.T) {
 
 func TestMeasurer(t *testing.T) {
 	assert.Implements(t, (*Measurer)(nil), &PrometheusMetrics{})
-}
-
-func testLogger() *LogrusLogger {
-	logger, _ := logrustest.NewNullLogger()
-	return &LogrusLogger{
-		basicLogger: logger,
-		logger:      logger.WithFields(nil),
-	}
 }
 
 func assertBodyContains(t *testing.T, r *http.Request, expected ...string) {

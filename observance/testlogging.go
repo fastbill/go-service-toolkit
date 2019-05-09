@@ -59,7 +59,7 @@ func NewTestLogger() TestLogger {
 	return &LogrusTestLogger{
 		LogrusLogger: LogrusLogger{
 			basicLogger: logger,
-			logger:      logger.WithField("name", "test-log"),
+			logger:      logger.WithFields(nil),
 		},
 		result: hook,
 	}
