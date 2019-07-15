@@ -2,6 +2,7 @@ package handlertest
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	toolkit "github.com/fastbill/go-service-toolkit"
 	"github.com/fastbill/go-service-toolkit/observance"
 	"github.com/labstack/echo"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -48,10 +50,17 @@ type PathParam struct {
 // CallHandler calls the given handler with the provided settings.
 // Afterwards it calls "AssertExpectations" of the provided mocks.
 func (s *Suite) CallHandler(t *testing.T, handlerFunc echo.HandlerFunc, params *Params, mocks []MockAsserter) (*httptest.ResponseRecorder, error) {
+	if handlerFunc == nil {
+		return nil, errors.New("error in test setup, handler missing")
+	}
+
+	if params == nil {
+		params = &Params{}
+	}
 	route, method := defineRouteAndMethod(params, t)
 
 	bodyAsReader, err := convertToReader(params.Body)
-	require.NoError(t, err, "error in test setup in CallHandler")
+	assert.NoError(t, err, "error in test setup in CallHandler")
 
 	req := httptest.NewRequest(method, route, bodyAsReader)
 	addHeaders(req, s.DefaultHeaders)
@@ -111,9 +120,9 @@ func defineRouteAndMethod(params *Params, t *testing.T) (string, string) {
 		for name, value := range params.Query {
 			values.Set(name, value)
 		}
-		route = values.Encode()
+		u.RawQuery = values.Encode()
+		route = u.String()
 	}
-
 	return route, method
 }
 
