@@ -148,3 +148,85 @@ func main() {
     <-connectionsClosed
 }
 ```
+
+# Handlertest
+This package helps with testing the echo handlers by providing a `CallHandler` method. It allows to specifiy default headers and middleware that should be applied for all handler tests.
+Addionally you can define the following parameters that should be applied when the handler function is called.
+* Route
+* Method
+* Body (can be `string`, `[]byte` or `io.Reader`)
+* Query parameters (they will be added to the query parameters in the route and overwrite the value of a particular parameter if it already exists)
+* Headers (they will overwrite the values that were set in the default headers)
+* Path parameters
+* Middleware (will be applied before the default middleware)
+* [Testify mocks](https://github.com/stretchr/testify#mock-package) for which should be checked whether their expectations were met after the handler was called
+
+All parameters and default parameters are optional.
+
+As response, the `CallHandler` method returns the error that the echo handler returned and the [response recorder](https://golang.org/pkg/net/http/httptest/#ResponseRecorder).
+
+## Usage
+### Minimal Case
+```go
+import (
+	"testing"
+    "github.com/fastbill/go-service-toolkit/handlertest"
+)
+
+func TestMyHandler(t *testing.T) {
+	s := handlertest.Suite{}
+	rec, err := s.CallHandler(tNew, myHandler, nil, nil)
+	// Do the assertions on the response and the error.
+}
+```
+This will call `myHandler` with the route `\` and the method `GET` without additional headers etc.
+
+### Full Example
+```go
+import (
+	"testing"
+    "github.com/fastbill/go-service-toolkit/handlertest"
+)
+
+var s = handlertest.Suite{
+	DefaultHeaders: map[string]string{
+		"Content-Type": "application/json",
+	},
+	Middleware: []echo.MiddlewareFunc{mwDefault},
+}
+
+func mwDefault(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// Do something
+		return next(c)
+	}
+}
+
+func TestMyHandler(t *testing.T) {
+	mwCustom := func (next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			// Do something
+			return next(c)
+		}
+	}
+
+	params := handlertest.Params{
+		Route: "/?query1=value1",
+		Method: "PUT",
+		Body: `{"id":123}`,
+		Headers: map[string]string{
+			"testHeader": "someValue",
+		},
+		Query: map[string]string{
+			"query2": "value2",
+		},
+		PathParams: []PathParam{
+			{Name: "param1", Value: "value1"},
+		},
+		Middleware: []echo.MiddlewareFunc{mwCustom},
+	}
+
+	rec, err := s.CallHandler(t, myHandler, params, []MockAsserter{myMock})
+	// Do the assertions on the response and the error.
+}
+```
