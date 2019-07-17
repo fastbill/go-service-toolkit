@@ -169,7 +169,7 @@ As response, the `CallHandler` method returns the error that the echo handler re
 ### Minimal Case
 ```go
 import (
-	"testig"
+	"testing"
     "github.com/fastbill/go-service-toolkit/handlertest"
 )
 
@@ -184,7 +184,7 @@ This will call `myHandler` with the route `\` and the method `GET` without addit
 ### Full Example
 ```go
 import (
-	"testig"
+	"testing"
     "github.com/fastbill/go-service-toolkit/handlertest"
 )
 
