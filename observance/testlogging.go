@@ -18,6 +18,7 @@ type TestLogger interface {
 type TestLogEntry struct {
 	Level   string
 	Message string
+	Data    map[string]interface{}
 }
 
 // LogrusTestLogger implements TestLogger.
@@ -31,6 +32,7 @@ func (l *LogrusTestLogger) LastEntry() TestLogEntry {
 	return TestLogEntry{
 		Level:   l.result.LastEntry().Level.String(),
 		Message: l.result.LastEntry().Message,
+		Data:    l.result.LastEntry().Data,
 	}
 }
 
@@ -41,6 +43,7 @@ func (l *LogrusTestLogger) Entries() []TestLogEntry {
 		newEntry := TestLogEntry{
 			Level:   entry.Level.String(),
 			Message: entry.Message,
+			Data:    entry.Data,
 		}
 		entries = append(entries, newEntry)
 	}
