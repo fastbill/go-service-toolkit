@@ -1,4 +1,4 @@
-# Service Toolkit
+# Service Toolkit [![Build Status](https://travis-ci.com/fastbill/go-service-toolkit.svg?branch=master)](https://travis-ci.com/fastbill/go-service-toolkit) [![Go Report Card](https://goreportcard.com/badge/github.com/fastbill/go-service-toolkit)](https://goreportcard.com/report/github.com/fastbill/go-service-toolkit) [![GoDoc](https://godoc.org/github.com/fastbill/go-service-toolkit?status.svg)](https://godoc.org/github.com/fastbill/go-service-toolkit)
 
 The service toolkit bundles configuration manangement, setting up logging, ORM, REDIS cache and configuring the web framework. It uses opinionated (default) settings to reduce the amount of boilerplate code needed for these tasks. With the toolkit a new Go mircoservice can be set up very quickly.
 
@@ -66,6 +66,8 @@ func SetupCustomContext(obs *observance.Observance) echo.MiddlewareFunc {
 	}
 }
 ```
+
+For testing there is a test logger provided. See the example [here](https://godoc.org/github.com/fastbill/go-service-toolkit/observance#example-NewTestLogger) to find out how to use it.
 
 TODO: Add metrics usage example
 
