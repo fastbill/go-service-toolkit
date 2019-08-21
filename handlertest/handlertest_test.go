@@ -152,7 +152,8 @@ func TestCallHandler_InvalidBody(t *testing.T) {
 	}
 
 	tNew := &testing.T{}
-	s.CallHandler(tNew, handler, p, nil)
+	_, err := s.CallHandler(tNew, handler, p, nil)
+	assert.NoError(t, err)
 	assert.True(t, tNew.Failed())
 }
 
@@ -242,7 +243,8 @@ func TestCallHandler_MockAssertions(t *testing.T) {
 		someMock.On("Do").Return(nil)
 
 		handler := func(c echo.Context) error {
-			someMock.Do()
+			err := someMock.Do()
+			assert.NoError(t, err)
 			return nil
 		}
 
