@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit"
-	"github.com/labstack/echo"
+	toolkit "github.com/fastbill/go-service-toolkit/v2"
+	"github.com/labstack/echo/v4"
 )
 
 // User holds all basic user information.

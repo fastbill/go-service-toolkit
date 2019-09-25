@@ -13,7 +13,7 @@ You need to tell the envloader in which folder to look for the `.env` files. By 
 ## Usage
 ```go
 import (
-	toolkit "github.com/fastbill/go-service-toolkit"
+	toolkit "github.com/fastbill/go-service-toolkit/v2"
 )
 
 
@@ -35,7 +35,7 @@ The `Obs` struct has a `PanicRecover` method that can be used as deferred functi
 import (
 	"time"
 
-	"github.com/fastbill/go-service-toolkit"
+	"github.com/fastbill/go-service-toolkit/v2"
 )
 
 func main() {
@@ -83,7 +83,7 @@ Additionally `MustEnsureDBMigrations` runs all migrations from the given folder 
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit"
+    "github.com/fastbill/go-service-toolkit/v2"
 )
 
 func main() {
@@ -112,7 +112,7 @@ The function `MustNewCache` sets up a new REDIS client. A prefix can be provided
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit"
+    "github.com/fastbill/go-service-toolkit/v2"
 )
 
 func main() {
