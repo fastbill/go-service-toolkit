@@ -135,7 +135,7 @@ For the graceful shutdown of the server to work correctly, you need to wait for 
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/server"
+    "github.com/fastbill/go-service-toolkit/v2/server"
 )
 
 func main() {
@@ -172,7 +172,7 @@ As response, the `CallHandler` method returns the error that the echo handler re
 ```go
 import (
 	"testing"
-    "github.com/fastbill/go-service-toolkit/handlertest"
+    "github.com/fastbill/go-service-toolkit/v2/handlertest"
 )
 
 func TestMyHandler(t *testing.T) {
@@ -187,7 +187,7 @@ This will call `myHandler` with the route `\` and the method `GET` without addit
 ```go
 import (
 	"testing"
-    "github.com/fastbill/go-service-toolkit/handlertest"
+    "github.com/fastbill/go-service-toolkit/v2/handlertest"
 )
 
 var s = handlertest.Suite{
