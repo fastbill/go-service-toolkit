@@ -1,14 +1,14 @@
 package toolkit
 
 import (
-	"github.com/fastbill/go-service-toolkit/cache"
-	"github.com/fastbill/go-service-toolkit/database"
-	"github.com/fastbill/go-service-toolkit/envloader"
-	"github.com/fastbill/go-service-toolkit/observance"
-	"github.com/fastbill/go-service-toolkit/server"
+	"github.com/fastbill/go-service-toolkit/v2/cache"
+	"github.com/fastbill/go-service-toolkit/v2/database"
+	"github.com/fastbill/go-service-toolkit/v2/envloader"
+	"github.com/fastbill/go-service-toolkit/v2/observance"
+	"github.com/fastbill/go-service-toolkit/v2/server"
 
 	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 // MustLoadEnvs checks and loads environment variables from the given folder.

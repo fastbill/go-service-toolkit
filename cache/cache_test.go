@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 )
 

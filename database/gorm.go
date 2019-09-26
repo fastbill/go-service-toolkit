@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/observance"
+	"github.com/fastbill/go-service-toolkit/v2/observance"
 
 	// import migrate mysql, postgres driver
 	_ "github.com/golang-migrate/migrate/database/mysql"

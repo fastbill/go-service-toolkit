@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/fastbill/go-service-toolkit/observance"
+	"github.com/fastbill/go-service-toolkit/v2/observance"
 	"github.com/labstack/gommon/log"
 )
 

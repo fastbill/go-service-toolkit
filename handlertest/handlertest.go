@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	toolkit "github.com/fastbill/go-service-toolkit"
-	"github.com/fastbill/go-service-toolkit/observance"
-	"github.com/labstack/echo"
+	toolkit "github.com/fastbill/go-service-toolkit/v2"
+	"github.com/fastbill/go-service-toolkit/v2/observance"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
