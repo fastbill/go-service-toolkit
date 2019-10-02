@@ -7,8 +7,8 @@ import (
 	"github.com/fastbill/go-service-toolkit/v2/observance"
 
 	// import migrate mysql, postgres driver
-	_ "github.com/golang-migrate/migrate/database/mysql"
-	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/jinzhu/gorm"
 )
 
