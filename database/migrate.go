@@ -3,15 +3,15 @@ package database
 import (
 	"path/filepath"
 
-	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/v4"
 
 	// import migrate mysql, postgres driver
-	_ "github.com/golang-migrate/migrate/database/mysql"
-	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/pkg/errors"
 
 	// import reading migrations from files
-	_ "github.com/golang-migrate/migrate/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 // EnsureMigrations checks which migrations from the given folder need to be executed
