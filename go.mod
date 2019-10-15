@@ -6,7 +6,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.10.0
 	github.com/certifi/gocertifi v0.0.0-20190905060710-a5e0173ced67 // indirect
 	github.com/evalphobia/logrus_sentry v0.8.2
-	github.com/fastbill/go-httperrors v1.0.0
+	github.com/fastbill/go-httperrors/v2 v2.0.0
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
