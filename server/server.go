@@ -88,8 +88,8 @@ func HTTPErrorHandler(logger observance.Logger) func(err error, c echo.Context) 
 			logger.WithFields(logrus.Fields{
 				"url":       c.Request().RequestURI,
 				"method":    c.Request().Method,
-				"requestId": c.Request().Header.Get("Fastbill-Outer-RequestId"),
-				"accountId": c.Request().Header.Get("Fastbill-AccountId"),
+				"requestId": c.Request().Header.Get(observance.RequestIDHeader),
+				"accountId": c.Request().Header.Get(observance.AccountIDHeader),
 			}).Error(err)
 		}
 

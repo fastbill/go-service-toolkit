@@ -5,7 +5,7 @@ The service toolkit bundles configuration manangement, setting up logging, ORM, 
 See [main.go in the example folder](https://github.com/fastbill/go-service-toolkit/blob/master/example/main.go) for a full, working example.
 
 # Configuration and Environment Variables
-Following the [12-Factor App Guideline](https://12factor.net/config) our service retrieves its configuration from the environment variables. To avoid having to pass a lot of variables that change rarely or never we keep most values in `.env` files that are then loaded
+Following the [12-Factor App Guideline](https://12factor.net/config) our service retrieves its configuration from the environment variables. To avoid having to pass a lot of variables that change rarely or never, we keep most values in `.env` files that are then loaded
 into environment variables by the envloader package. Values from these files serve as default and are overwritten by values from the environment.
 
 You need to tell the envloader in which folder to look for the `.env` files. By default it will only load the `prod.env` file from that folder. If the environment variable `ENV` is set to e.g. `dev` the the loader will load `dev.env` first and only load additional values not set in there from `prod.env`.
@@ -28,7 +28,7 @@ We bundle logging and capturing custom metrics in one `Obs` struct (short for ob
 
 We use [Logrus](https://github.com/sirupsen/logrus) as logger under the hood but it is wrapped with a custom interface so we do not depend directly on the interface provided by Logrus. Logs will be written to StdOut in JSON format. If you pass a Sentry URL and version all log entries with level error or higher will be pushed to Sentry. This is done via hooks in Logrus.
 
-The `Obs` struct has a `PanicRecover` method that can be used as deferred function in your setup. It will log the stack trace in case a panic happens.
+The `Obs` struct has a `PanicRecover` method that can be used as deferred function in your setup. It will log the stack trace in case a panic happens in the main Goroutine.
 
 ## Usage
 ```go
@@ -78,7 +78,7 @@ The toolkit allows to set up the database (MySQL or PostgreSQL). The `MustSetupD
 * Create the database with the given name in case it did not exist yet
 * Set up the ORM: [GORM](http://gorm.io/)
 
-Additionally `MustEnsureDBMigrations` runs all migrations from the given folder that are missing so far. For that the package [migrate](https://github.com/golang-migrate/migrate) is used.
+Additionally `MustEnsureDBMigrations` runs all migrations from the given folder that are missing so far. For that, the package [migrate](https://github.com/golang-migrate/migrate) is used.
 
 ## Usage
 ```go
@@ -126,11 +126,7 @@ func main() {
 ```
 
 # Server
-The server package sets up an [Echo](https://echo.labstack.com/) server that includes graceful shutdown, timeouts, CORS, an error handler that can handle [HTTPErrors](https://github.com/fastbill/httperrors) etc.
-
-The default configuration includes a custom `Bind` method for the context object that performs the default Echo `Bind` but also validates the input via [github.com/go-playground/validator](https://github.com/go-playground/validator).
-
-For the graceful shutdown of the server to work correctly, you need to wait for the channel to be closed at the end of your program as shown below.
+The server package sets up an [Echo](https://echo.labstack.com/) server that includes graceful shutdown, timeouts, CORS, an error handler that can handle [HTTPErrors](https://github.com/fastbill/httperrors) etc. The individual features are described below.
 
 ## Usage
 ```go
@@ -139,7 +135,7 @@ import (
 )
 
 func main() {
-    echoServer, connectionsClosed := server.MustSetup(logger)
+    echoServer, connectionsClosed := server.New(logger, "https://example.com", "1m")
 	
 	// Set up routes etc.
 
@@ -150,6 +146,56 @@ func main() {
     <-connectionsClosed
 }
 ```
+
+## CORS
+When setting up the server via `New` the second argument defines the CORS `AllowOrigins` value. Multiple URLs can be passed as comma separated string. If an empty string is passed, no CORS middleware is applied and same-origin restrictions apply.
+
+## Timeout
+When setting up the server via `New` the third argument is optional and can contain a timeout duration in the format described [here](https://golang.org/pkg/time/#ParseDuration). If it is ommited a default timeout of 30 seconds is applied for all connections. The timeout applies to reading headers, reading the request and writing the response.
+
+## Graceful Shutdown
+When the application receives `SIGINT` or `SIGTERM` a shutdown procedure is initated. The server does not accept new connections and waits for a maximum of 9 seconds for the ongoining requests to be finished. As soon as all HTTP connections are closed the server is shut down. For this graceful shutdown to work correctly, you need to wait for the provided channel to be closed at the end of your main Goroutine as shown below, otherwise the program will completely terminate before the graceful shutdown was completed.
+
+## Parsing and Validating JSON
+The default configuration includes a custom `Bind` method for the context object that performs the [default Echo `Bind`](https://echo.labstack.com/guide/request) that parses the JSON request but also validates the input struct via [github.com/go-playground/validator](https://github.com/go-playground/validator) in case the struct definition includes the respective validation tags.
+
+## Error Handling and Logging
+When an error is returned from an Echo HTTP handler it will encounter a custom error handler that was added to the server. If the error is an [HTTPError](https://github.com/fastbill/httperrors) or one of Echos own HTTP errors it will not be logged. The response will contain the status code and body specified by those errors. The behavoir is different for all other error types. They will lead to a `500` response with the message of the error in the body. Additionally these errors will be logged automatically. The log entry will include the URL, method, request id and account id.
+
+**Examples**
+```go
+import "github.com/fastbill/go-httperrors"
+
+//...
+echoServer.GET("/", func (c echo.Context) error {
+	return httperrors.New(http.StatusForbidden, "not allowed")
+})
+// The HTTP response will be 403 with body {"message": "not allowed"} and the error will not be logged.
+// The developer needs to take care of logging the error if necessary.
+
+echoServer.GET("/", func (c echo.Context) error {
+	someError := errors.New("test error")
+	return someError
+})
+// The HTTP response will be 500 with body {"message": "test error"} and the error will be logged.
+// No additional logging by the developer is needed.
+```
+
+If you want to supress the automatic logging for 500 cases and log the error yourself instead, then return an HTTPError instead of the naked error:
+```go
+import "github.com/fastbill/go-httperrors"
+echoServer.GET("/", func (c echo.Context) error {
+	someError := errors.New("test error")
+	// log the error yourself
+	return httperrors.New(http.StatusInternalServerError, someError)
+})
+```
+
+## Other Features
+* HTTP2 is disabled by default 
+* Trailing slashes will be removed from the URL via [echo.labstack.com/middleware/trailing-slash](https://echo.labstack.com/middleware/trailing-slash)
+* If a panic happens somewhere in the HTTP handler it will be recovered and logged via [echo.labstack.com/middleware/recover](https://echo.labstack.com/middleware/recover), the server will not crash
+
 
 # Handlertest
 This package helps with testing the echo handlers by providing a `CallHandler` method. It allows to specifiy default headers and middleware that should be applied for all handler tests.
