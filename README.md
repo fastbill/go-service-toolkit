@@ -208,6 +208,7 @@ Addionally you can define the following parameters that should be applied when t
 * Path parameters
 * Middleware (will be applied before the default middleware)
 * [Testify mocks](https://github.com/stretchr/testify#mock-package) for which should be checked whether their expectations were met after the handler was called
+* Sleeping time before the assertions for the mocks are performed (e.g. when they are called in another Go routine)
 
 All parameters and default parameters are optional.
 
@@ -272,6 +273,7 @@ func TestMyHandler(t *testing.T) {
 			{Name: "param1", Value: "value1"},
 		},
 		Middleware: []echo.MiddlewareFunc{mwCustom},
+		SleepBeforeAssert: 100 * time.Millisecond,
 	}
 
 	rec, err := s.CallHandler(t, myHandler, params, []MockAsserter{myMock})
