@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -269,4 +270,27 @@ func TestCallHandler_MockAssertions(t *testing.T) {
 		assert.NoError(t, err)
 		assert.True(t, tNew.Failed())
 	})
+}
+
+func TestCallHandler_SleepBeforeAssert(t *testing.T) {
+	s := Suite{}
+	someMock := &TestMock{}
+	someMock.On("Do").Return(nil)
+
+	handler := func(c echo.Context) error {
+		err := someMock.Do()
+		assert.NoError(t, err)
+		return nil
+	}
+
+	p := &Params{
+		SleepBeforeAssert: 100 * time.Millisecond,
+	}
+
+	tNew := &testing.T{}
+	now := time.Now()
+	_, err := s.CallHandler(tNew, handler, p, []MockAsserter{someMock})
+	assert.NoError(t, err)
+	assert.False(t, tNew.Failed())
+	assert.Greater(t, int64(time.Since(now)), int64(p.SleepBeforeAssert))
 }

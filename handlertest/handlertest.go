@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	toolkit "github.com/fastbill/go-service-toolkit/v2"
 	"github.com/fastbill/go-service-toolkit/v2/observance"
@@ -27,13 +28,14 @@ type Suite struct {
 
 // Params contains all settings that should be used when calling the handler.
 type Params struct {
-	Route      string
-	Method     string
-	Body       interface{}
-	Headers    map[string]string
-	PathParams []PathParam
-	Query      map[string]string
-	Middleware []echo.MiddlewareFunc
+	Route             string
+	Method            string
+	Body              interface{}
+	Headers           map[string]string
+	PathParams        []PathParam
+	Query             map[string]string
+	Middleware        []echo.MiddlewareFunc
+	SleepBeforeAssert time.Duration
 }
 
 // MockAsserter is the interface that needs to be fulfilled by the mocks that are passed in.
@@ -77,6 +79,10 @@ func (s *Suite) CallHandler(t *testing.T, handlerFunc echo.HandlerFunc, params *
 	handlerFuncWithMiddleware := applyMiddleware(handlerFunc, allMiddleware)
 
 	defer func() {
+		if params.SleepBeforeAssert != 0 {
+			time.Sleep(params.SleepBeforeAssert)
+		}
+
 		for _, m := range mocks {
 			m.AssertExpectations(t)
 		}
