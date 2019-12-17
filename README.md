@@ -234,14 +234,17 @@ This will call `myHandler` with the route `\` and the method `GET` without addit
 ```go
 import (
 	"testing"
-    "github.com/fastbill/go-service-toolkit/v2/handlertest"
+	"time"
+
+	"github.com/fastbill/go-service-toolkit/v2/handlertest"
+	"github.com/labstack/echo/v4"
 )
 
 var s = handlertest.Suite{
 	DefaultHeaders: map[string]string{
 		"Content-Type": "application/json",
 	},
-	Middleware: []echo.MiddlewareFunc{mwDefault},
+	DefaultMiddleware: []echo.MiddlewareFunc{mwDefault},
 }
 
 func mwDefault(next echo.HandlerFunc) echo.HandlerFunc {
@@ -252,31 +255,31 @@ func mwDefault(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func TestMyHandler(t *testing.T) {
-	mwCustom := func (next echo.HandlerFunc) echo.HandlerFunc {
+	mwCustom := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Do something
 			return next(c)
 		}
 	}
 
-	params := handlertest.Params{
-		Route: "/?query1=value1",
+	params := &handlertest.Params{
+		Route:  "/?query1=value1",
 		Method: "PUT",
-		Body: `{"id":123}`,
+		Body:   `{"id":123}`,
 		Headers: map[string]string{
 			"testHeader": "someValue",
 		},
 		Query: map[string]string{
 			"query2": "value2",
 		},
-		PathParams: []PathParam{
+		PathParams: []handlertest.PathParam{
 			{Name: "param1", Value: "value1"},
 		},
-		Middleware: []echo.MiddlewareFunc{mwCustom},
+		Middleware:        []echo.MiddlewareFunc{mwCustom},
 		SleepBeforeAssert: 100 * time.Millisecond,
 	}
 
-	rec, err := s.CallHandler(t, myHandler, params, []MockAsserter{myMock})
+	rec, err := s.CallHandler(t, myHandler, params, []handlertest.MockAsserter{myMock})
 	// Do the assertions on the response and the error.
 }
 ```
