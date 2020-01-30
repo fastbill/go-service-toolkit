@@ -12,6 +12,7 @@ import (
 // Logger is a general interface to be implemented for multiple loggers.
 type Logger interface {
 	Level() string
+	Trace(msg interface{})
 	Debug(msg interface{})
 	Info(msg interface{})
 	Warn(msg interface{})
@@ -35,6 +36,11 @@ type LogrusLogger struct {
 // Only entries with that level or above with be logged.
 func (l *LogrusLogger) Level() string {
 	return l.basicLogger.Level.String()
+}
+
+// Trace writes a log entry with level "trace".
+func (l *LogrusLogger) Trace(msg interface{}) {
+	l.logger.Trace(msg)
 }
 
 // Debug writes a log entry with level "debug".
