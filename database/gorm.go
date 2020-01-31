@@ -61,7 +61,7 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 		}
 	}
 
-	if logger.Level() == "debug" {
+	if logger.Level() == "debug" || logger.Level() == "trace" {
 		db.LogMode(true)
 		gormLogger := GormLogrus{logger}
 		db.SetLogger(gormLogger)
