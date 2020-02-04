@@ -120,6 +120,13 @@ func TestGetBool(t *testing.T) {
 			assert.Error(t, err)
 		})
 	})
+
+	t.Run("value not found", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			_, err := client.GetBool("someKey")
+			assert.Equal(t, ErrNotFound, err)
+		})
+	})
 }
 
 func TestSetJSON(t *testing.T) {

@@ -90,7 +90,10 @@ func (r *RedisClient) GetBool(key string) (bool, error) {
 	result, err := r.Get(key)
 	if err == redis.Nil {
 		return false, ErrNotFound
+	} else if err != nil {
+		return false, err
 	}
+
 	return strconv.ParseBool(result)
 }
 
