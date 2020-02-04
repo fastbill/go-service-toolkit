@@ -178,6 +178,14 @@ func TestGetJSON(t *testing.T) {
 			assert.Error(t, err)
 		})
 	})
+
+	t.Run("value not found", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			result := &testStruct{}
+			err := client.GetJSON("foo", result)
+			assert.Equal(t, ErrNotFound, err)
+		})
+	})
 }
 
 func TestDel(t *testing.T) {

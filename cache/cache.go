@@ -109,9 +109,12 @@ func (r *RedisClient) SetJSON(key string, value interface{}, expiration time.Dur
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) GetJSON(key string, result interface{}) error {
 	resultStr, err := r.Get(key)
-	if err != nil {
+	if err == redis.Nil {
+		return ErrNotFound
+	} else if err != nil {
 		return err
 	}
+
 	return json.Unmarshal([]byte(resultStr), &result)
 }
 
