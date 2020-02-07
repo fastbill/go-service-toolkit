@@ -159,6 +159,20 @@ func TestGetInt(t *testing.T) {
 	})
 }
 
+func TestIncr(t *testing.T) {
+	withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+		value, err := client.Incr("someKey")
+		require.NoError(t, err, "error in test setup")
+		assert.Equal(t, int64(1), value)
+
+		value, err = client.Incr("someKey")
+		require.NoError(t, err, "error in test setup")
+		assert.Equal(t, int64(2), value)
+
+		redis.CheckGet(t, "testPrefix:someKey", "2")
+	})
+}
+
 func TestSetJSON(t *testing.T) {
 	value := testStruct{
 		Name: "Kathryn Janeway",

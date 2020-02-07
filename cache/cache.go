@@ -22,6 +22,7 @@ type Cache interface {
 	GetBool(key string) (bool, error)
 	SetInt(key string, value int64, expiration time.Duration) error
 	GetInt(key string) (int64, error)
+	Incr(key string) (int64, error)
 	SetJSON(key string, value interface{}, expiration time.Duration) error
 	GetJSON(key string, result interface{}) error
 	Del(key string) error
@@ -117,6 +118,13 @@ func (r *RedisClient) GetInt(key string) (int64, error) {
 	}
 
 	return strconv.ParseInt(result, 10, 64)
+}
+
+// Incr increments a value in REDIS.
+// If the client was set up with a prefix it will be added in front of the key.
+// It returns the new (incremented) value.
+func (r *RedisClient) Incr(key string) (int64, error) {
+	return r.Redis.Incr(r.prefixedKey(key)).Result()
 }
 
 // SetJSON saves JSON data as string to REDIS.
