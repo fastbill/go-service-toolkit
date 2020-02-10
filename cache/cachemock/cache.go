@@ -39,11 +39,25 @@ func (m *Cache) GetBool(key string) (bool, error) {
 	return args.Bool(0), args.Error(1)
 }
 
+// GetInt is a mock implementation of cache.Cache#GetInt.
+func (m *Cache) GetInt(key string) (int64, error) {
+	args := m.Called(key)
+
+	return args.Get(0).(int64), args.Error(1)
+}
+
 // GetJSON is a mock implementation of cache.Cache#GetJSON.
 func (m *Cache) GetJSON(key string, result interface{}) error {
 	args := m.Called(key, result)
 
 	return args.Error(0)
+}
+
+// Incr is a mock implementation of cache.Cache#Incr.
+func (m *Cache) Incr(key string) (int64, error) {
+	args := m.Called(key)
+
+	return args.Get(0).(int64), args.Error(1)
 }
 
 // Prefix is a mock implementation of cache.Cache#Prefix.
@@ -62,6 +76,13 @@ func (m *Cache) Set(key string, value string, expiration time.Duration) error {
 
 // SetBool is a mock implementation of cache.Cache#SetBool.
 func (m *Cache) SetBool(key string, value bool, expiration time.Duration) error {
+	args := m.Called(key, value, expiration)
+
+	return args.Error(0)
+}
+
+// SetInt is a mock implementation of cache.Cache#SetInt.
+func (m *Cache) SetInt(key string, value int64, expiration time.Duration) error {
 	args := m.Called(key, value, expiration)
 
 	return args.Error(0)
