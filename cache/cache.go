@@ -91,9 +91,7 @@ func (r *RedisClient) SetBool(key string, value bool, expiration time.Duration) 
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) GetBool(key string) (bool, error) {
 	result, err := r.Get(key)
-	if err == redis.Nil {
-		return false, ErrNotFound
-	} else if err != nil {
+	if err != nil {
 		return false, err
 	}
 
@@ -111,9 +109,7 @@ func (r *RedisClient) SetInt(key string, value int64, expiration time.Duration) 
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) GetInt(key string) (int64, error) {
 	result, err := r.Get(key)
-	if err == redis.Nil {
-		return 0, ErrNotFound
-	} else if err != nil {
+	if err != nil {
 		return 0, err
 	}
 
@@ -142,9 +138,7 @@ func (r *RedisClient) SetJSON(key string, value interface{}, expiration time.Dur
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) GetJSON(key string, result interface{}) error {
 	resultStr, err := r.Get(key)
-	if err == redis.Nil {
-		return ErrNotFound
-	} else if err != nil {
+	if err != nil {
 		return err
 	}
 
