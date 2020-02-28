@@ -253,6 +253,40 @@ func TestDel(t *testing.T) {
 	})
 }
 
+func TestTTL(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			err := redis.Set("testPrefix:someKey", "100")
+			require.NoError(t, err)
+			redis.SetTTL("testPrefix:someKey", 1*time.Second)
+
+			result, err := client.TTL("testPrefix:someKey")
+
+			require.NoError(t, err)
+			assert.Equal(t, 1*time.Second, result)
+		})
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			_, err := client.TTL("testPrefix:someKey")
+
+			require.Error(t, err)
+			assert.Equal(t, ErrNotFound, err)
+		})
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			redis.Close()
+			_, err := client.TTL("testPrefix:someKey")
+
+			require.Error(t, err)
+			assert.NotEqual(t, ErrNotFound, err)
+		})
+	})
+}
+
 func withRedis(t *testing.T, fn func(redis *miniredis.Miniredis, client *RedisClient)) {
 	redis, err := miniredis.Run()
 	assert.NoError(t, err, "error in test setup")
