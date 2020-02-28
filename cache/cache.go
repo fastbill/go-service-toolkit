@@ -27,6 +27,7 @@ type Cache interface {
 	GetJSON(key string, result interface{}) error
 	Del(key string) error
 	Close() error
+	TTL(key string) (time.Duration, error)
 }
 
 // RedisClient wraps the REDIS client to provide an implementation of the Cache interface.
@@ -154,6 +155,21 @@ func (r *RedisClient) Del(key string) error {
 // Close closes the connection to the REDIS server.
 func (r *RedisClient) Close() error {
 	return r.Redis.Close()
+}
+
+// TTL returns remaining time to live of the given key found in REDIS.
+// If the key doesn't exist, it returns ErrNotFound.
+func (r *RedisClient) TTL(key string) (time.Duration, error) {
+	result, err := r.Redis.TTL(key).Result()
+	if err != nil {
+		return 0, err
+	}
+
+	if result == -2 {
+		return 0, ErrNotFound
+	}
+
+	return result, nil
 }
 
 // prefixedKey adds the prefix in front of the key separated with ":".

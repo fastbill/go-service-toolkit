@@ -88,6 +88,17 @@ func (m *Cache) SetInt(key string, value int64, expiration time.Duration) error 
 	return args.Error(0)
 }
 
+// TTL is a mock implementation of cache.Cache#TTL.
+func (m *Cache) TTL(key string) (time.Duration, error) {
+	args := m.Called(key)
+
+	if args.Get(0) != nil {
+		return args.Get(0).(time.Duration), args.Error(1)
+	}
+
+	return 0, args.Error(1)
+}
+
 // SetJSON is a mock implementation of cache.Cache#SetJSON.
 func (m *Cache) SetJSON(key string, value interface{}, expiration time.Duration) error {
 	args := m.Called(key, value, expiration)
