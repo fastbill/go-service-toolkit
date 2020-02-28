@@ -160,7 +160,7 @@ func (r *RedisClient) Close() error {
 // TTL returns remaining time to live of the given key found in REDIS.
 // If the key doesn't exist, it returns ErrNotFound.
 func (r *RedisClient) TTL(key string) (time.Duration, error) {
-	result, err := r.Redis.TTL(key).Result()
+	result, err := r.Redis.TTL(r.prefixedKey(key)).Result()
 	if err != nil {
 		return 0, err
 	}
