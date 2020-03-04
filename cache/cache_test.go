@@ -276,6 +276,18 @@ func TestTTL(t *testing.T) {
 		})
 	})
 
+	t.Run("TTL not set for the existing key", func(t *testing.T) {
+		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
+			err := redis.Set("testPrefix:someKey", "100")
+			require.NoError(t, err)
+
+			_, err = client.TTL("someKey")
+
+			require.Error(t, err)
+			assert.Equal(t, ErrNoTTLSet, err)
+		})
+	})
+
 	t.Run("failure", func(t *testing.T) {
 		withRedis(t, func(redis *miniredis.Miniredis, client *RedisClient) {
 			redis.Close()
