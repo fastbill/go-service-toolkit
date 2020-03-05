@@ -10,8 +10,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrNotFound is returned when the key was not found in the cache.
-var ErrNotFound = errors.New("key not found in cache")
+// Common errors that might be returned by the cache package.
+var (
+	ErrNotFound = errors.New("key not found in cache")
+	ErrNoTTLSet = errors.New("key does not have a TTL set")
+)
 
 // Cache defines basic cache operations including methods for setting and getting JSON objects.
 type Cache interface {
@@ -163,6 +166,10 @@ func (r *RedisClient) TTL(key string) (time.Duration, error) {
 	result, err := r.Redis.TTL(r.prefixedKey(key)).Result()
 	if err != nil {
 		return 0, err
+	}
+
+	if result == -1 {
+		return 0, ErrNoTTLSet
 	}
 
 	if result == -2 {
