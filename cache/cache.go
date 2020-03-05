@@ -13,7 +13,7 @@ import (
 // Common errors that might be returned by the cache package.
 var (
 	ErrNotFound = errors.New("key not found in cache")
-	ErrNoTTLSet = errors.New("key does not have TTL set")
+	ErrNoTTLSet = errors.New("key does not have a TTL set")
 )
 
 // Cache defines basic cache operations including methods for setting and getting JSON objects.
