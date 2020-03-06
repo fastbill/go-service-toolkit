@@ -7,12 +7,16 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// MustApplyDatabaseSeed applies SQL queries to the currently active database, which are stored in the given file.
-// If there are already any rows stored in database tables, seed file will not be applied.
+// MustApplyDatabaseSeed applies all SQL queries from the given file to the currently active database.
+// If any database table besides "schema_migrations" already contains data, the seed file will not be applied.
 func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 	applySeedCheckSQL := `
-		SELECT SUM(TABLE_ROWS) AS rows
-		FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME NOT IN ('schema_migrations')
+		SELECT
+			SUM(TABLE_ROWS) AS rows
+		FROM
+			information_schema.TABLES
+		WHERE
+			TABLE_SCHEMA = ? AND TABLE_NAME NOT IN ('schema_migrations')
 	`
 	result := struct {
 		Rows uint64
