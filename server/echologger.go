@@ -138,15 +138,15 @@ func (l Logger) Debugj(j log.JSON) {
 
 // Print implements echo.Logger#Print.
 func (l Logger) Print(i ...interface{}) {
-	l.Debug(fmt.Sprintf("%v", i))
+	l.Info(fmt.Sprintf("%v", i))
 }
 
 // Printf implements echo.Logger#Printf.
 func (l Logger) Printf(format string, args ...interface{}) {
-	l.Debug(fmt.Sprintf(format, args...))
+	l.Info(fmt.Sprintf(format, args...))
 }
 
 // Printj implements echo.Logger#Printj.
 func (l Logger) Printj(j log.JSON) {
-	l.Debug(fmt.Sprintf("%+v", j))
+	l.Info(fmt.Sprintf("%+v", j))
 }
