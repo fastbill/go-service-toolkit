@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v2"
-	"github.com/fastbill/go-service-toolkit/v2/observance"
+	toolkit "github.com/fastbill/go-service-toolkit/v3"
+	"github.com/fastbill/go-service-toolkit/v3/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -70,7 +70,7 @@ func (s *Suite) CallHandler(t *testing.T, handlerFunc echo.HandlerFunc, params *
 	rec := httptest.NewRecorder()
 
 	obs := &observance.Obs{Logger: observance.NewTestLogger()}
-	e, _ := toolkit.MustNewServer(obs.Logger, "")
+	e, _ := toolkit.MustNewServer(obs, "")
 	ctx := e.NewContext(req, rec)
 
 	addPathParams(ctx, params.PathParams)

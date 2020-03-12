@@ -1,4 +1,4 @@
-module github.com/fastbill/go-service-toolkit/v2
+module github.com/fastbill/go-service-toolkit/v3
 
 go 1.13
 
@@ -8,8 +8,7 @@ require (
 	github.com/evalphobia/logrus_sentry v0.8.2
 	github.com/fastbill/go-httperrors/v2 v2.0.0
 	github.com/getsentry/raven-go v0.2.0 // indirect
-	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.21.0+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/golang-migrate/migrate/v4 v4.6.2
