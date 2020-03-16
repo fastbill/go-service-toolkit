@@ -55,7 +55,7 @@ func NewObs(config Config) (*Obs, error) {
 
 // CopyWithRequest creates a new observance and adds request-specific fields to
 // the logger (and maybe at some point to the other parts of observance, too).
-// The headers specified in the config (LoggedHeaders) will be added as log fields with their speficied field names.
+// The headers specified in the config (LoggedHeaders) will be added as log fields with their specified field names.
 func (o *Obs) CopyWithRequest(r *http.Request) *Obs {
 	obCopy := *o
 	obs := &obCopy
