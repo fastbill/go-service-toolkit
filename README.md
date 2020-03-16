@@ -13,7 +13,7 @@ You need to tell the envloader in which folder to look for the `.env` files. By 
 ## Usage
 ```go
 import (
-	toolkit "github.com/fastbill/go-service-toolkit/v2"
+	toolkit "github.com/fastbill/go-service-toolkit/v3"
 )
 
 
@@ -24,7 +24,7 @@ func main() {
 ```
 
 # Observability - Logging and Metrics
-We bundle logging and capturing custom metrics in one `Obs` struct (short for observance). In the future tools for tracing might also be added. Due to the bundling only one struct needs to be passed around in the application and not 2 or 3. Additionally the observance struct provides a method to create request specific observance instances that automatically add url, path and request id to every log message created with that instance. It also adds the account id if it was found in the request header. The headers that are checked for this can be configured via `observance.RequestIDHeader` and `observance.AccountIDHeader`.
+We bundle logging and capturing custom metrics in one `Obs` struct (short for observance). In the future tools for tracing might also be added. Due to the bundling only one struct needs to be passed around in the application and not 2 or 3. Additionally the observance struct provides a method to create request specific observance instances that automatically add url, path and request id to every log message created with that instance. It also adds the request headers specified via `LoggedHeaders` to the logger with the given field name when the method `CopyWithRequest` is used.
 
 We use [Logrus](https://github.com/sirupsen/logrus) as logger under the hood but it is wrapped with a custom interface so we do not depend directly on the interface provided by Logrus. Logs will be written to StdOut in JSON format. If you pass a Sentry URL and version all log entries with level error or higher will be pushed to Sentry. This is done via hooks in Logrus.
 
@@ -35,7 +35,7 @@ The `Obs` struct has a `PanicRecover` method that can be used as deferred functi
 import (
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v2"
+	"github.com/fastbill/go-service-toolkit/v3"
 )
 
 func main() {
@@ -46,6 +46,9 @@ func main() {
 		Version:              "1.0.0",
 		MetricsURL:           "http://example.com",
 		MetricsFlushInterval: 1 * time.Second,
+		LoggedHeaders: map[string]string{
+			"FastBill-RequestId": "requestId",
+		},
 	}
 
 	obs := toolkit.MustNewObs(obsConfig)
@@ -83,7 +86,7 @@ Additionally `MustEnsureDBMigrations` runs all migrations from the given folder 
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v2"
+    "github.com/fastbill/go-service-toolkit/v3"
 )
 
 func main() {
@@ -112,7 +115,7 @@ The function `MustNewCache` sets up a new REDIS client. A prefix can be provided
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v2"
+    "github.com/fastbill/go-service-toolkit/v3"
 )
 
 func main() {
@@ -131,11 +134,11 @@ The server package sets up an [Echo](https://echo.labstack.com/) server that inc
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v2/server"
+    "github.com/fastbill/go-service-toolkit/v3/server"
 )
 
 func main() {
-    echoServer, connectionsClosed := server.New(logger, "https://example.com", "1m")
+    echoServer, connectionsClosed := server.New(obs, "https://example.com", "1m")
 	
 	// Set up routes etc.
 
@@ -219,7 +222,7 @@ As response, the `CallHandler` method returns the error that the echo handler re
 ```go
 import (
 	"testing"
-    "github.com/fastbill/go-service-toolkit/v2/handlertest"
+    "github.com/fastbill/go-service-toolkit/v3/handlertest"
 )
 
 func TestMyHandler(t *testing.T) {
@@ -236,7 +239,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v2/handlertest"
+	"github.com/fastbill/go-service-toolkit/v3/handlertest"
 	"github.com/labstack/echo/v4"
 )
 

@@ -1,11 +1,11 @@
 package toolkit
 
 import (
-	"github.com/fastbill/go-service-toolkit/v2/cache"
-	"github.com/fastbill/go-service-toolkit/v2/database"
-	"github.com/fastbill/go-service-toolkit/v2/envloader"
-	"github.com/fastbill/go-service-toolkit/v2/observance"
-	"github.com/fastbill/go-service-toolkit/v2/server"
+	"github.com/fastbill/go-service-toolkit/v3/cache"
+	"github.com/fastbill/go-service-toolkit/v3/database"
+	"github.com/fastbill/go-service-toolkit/v3/envloader"
+	"github.com/fastbill/go-service-toolkit/v3/observance"
+	"github.com/fastbill/go-service-toolkit/v3/server"
 
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
@@ -63,8 +63,8 @@ func MustEnsureDBMigrations(folderPath string, config DBConfig) {
 }
 
 // MustNewServer sets up a new Echo server.
-func MustNewServer(logger observance.Logger, CORSOrigins string, timeout ...string) (*echo.Echo, chan struct{}) {
-	echoServer, connectionsClosed, err := server.New(logger, CORSOrigins, timeout...)
+func MustNewServer(obs *observance.Obs, CORSOrigins string, timeout ...string) (*echo.Echo, chan struct{}) {
+	echoServer, connectionsClosed, err := server.New(obs, CORSOrigins, timeout...)
 	if err != nil {
 		panic(err)
 	}

@@ -12,6 +12,10 @@ func TestCopyWithRequest(t *testing.T) {
 	config := Config{
 		AppName:  "testApp",
 		LogLevel: "debug",
+		LoggedHeaders: map[string]string{
+			"Fastbill-Outer-RequestId": "requestId",
+			"Fastbill-AccountId":       "accountId",
+		},
 	}
 	obs, err := NewObs(config)
 	assert.NoError(t, err)

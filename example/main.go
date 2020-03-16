@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v2"
+	toolkit "github.com/fastbill/go-service-toolkit/v3"
 	"github.com/labstack/echo/v4"
 )
 
@@ -28,6 +28,9 @@ func main() {
 		Version:              os.Getenv("APP_VERSION"),
 		MetricsURL:           os.Getenv("METRICS_URL"),
 		MetricsFlushInterval: 1 * time.Second,
+		LoggedHeaders: map[string]string{
+			"FastBill-RequestId": "requestId",
+		},
 	}
 	obs := toolkit.MustNewObs(obsConfig)
 	defer obs.PanicRecover()
@@ -59,7 +62,7 @@ func main() {
 	}()
 
 	// Set up the server.
-	e, connectionsClosed := toolkit.MustNewServer(obs.Logger, "")
+	e, connectionsClosed := toolkit.MustNewServer(obs, "")
 
 	// Set up a routes and handlers.
 	e.POST("/users", func(c echo.Context) error {
