@@ -55,7 +55,7 @@ func NewRedis(redisHost string, redisPort string, prefix string) (*RedisClient, 
 	client := redis.NewClient(&opts)
 	_, err := client.Ping().Result()
 	if err != nil {
-		return nil, errors.New("could not ping REDIS")
+		return nil, fmt.Errorf("could not ping REDIS: %w", err)
 	}
 
 	redisClient := &RedisClient{
