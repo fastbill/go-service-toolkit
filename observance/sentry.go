@@ -108,12 +108,6 @@ func (hook *sentryHook) Flush() {
 }
 
 func newSentryHook(options sentryOptions, levels []logrus.Level) (*sentryHook, error) {
-	options.BeforeSend = func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
-		// Remove the list of all packages of the service. It just spams Sentry.
-		event.Modules = make(map[string]string)
-		return event
-	}
-
 	client, err := sentry.NewClient(sentry.ClientOptions(options))
 	if err != nil {
 		return nil, err

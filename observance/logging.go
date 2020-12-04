@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -113,11 +114,23 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 	}
 
 	if sentryURL != "" {
-		hook, err := newSentryHook(sentryOptions{Dsn: sentryURL, AttachStacktrace: true}, []logrus.Level{
+		levelsToSendToSentry := []logrus.Level{
 			logrus.PanicLevel,
 			logrus.FatalLevel,
 			logrus.ErrorLevel,
-		})
+		}
+
+		sentryOpts := sentryOptions{
+			Dsn:              sentryURL,
+			AttachStacktrace: true,
+			BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+				// Remove the list of all packages of the service. It just spams Sentry.
+				event.Modules = make(map[string]string)
+				return event
+			},
+		}
+
+		hook, err := newSentryHook(sentryOpts, levelsToSendToSentry)
 		if err != nil {
 			return nil, err
 		}
