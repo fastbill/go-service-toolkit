@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	logrusSentry "github.com/evalphobia/logrus_sentry"
 	"github.com/sirupsen/logrus"
 )
 
@@ -114,12 +113,11 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 	}
 
 	if sentryURL != "" {
-		hook, err := logrusSentry.NewAsyncSentryHook(sentryURL, []logrus.Level{
+		hook, err := newSentryHook(sentryOptions{Dsn: sentryURL, AttachStacktrace: true}, []logrus.Level{
 			logrus.PanicLevel,
 			logrus.FatalLevel,
 			logrus.ErrorLevel,
 		})
-
 		if err != nil {
 			return nil, err
 		}
@@ -127,9 +125,6 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 		if version != "" {
 			hook.SetRelease(version)
 		}
-
-		// default timeout of 100ms was too low for first event that is fired
-		hook.Timeout = 500 * time.Millisecond
 
 		basicLogger.Hooks.Add(hook)
 	}
