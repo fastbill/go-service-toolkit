@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	logrusSentry "github.com/evalphobia/logrus_sentry"
+	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -114,12 +114,23 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 	}
 
 	if sentryURL != "" {
-		hook, err := logrusSentry.NewAsyncSentryHook(sentryURL, []logrus.Level{
+		levelsToSendToSentry := []logrus.Level{
 			logrus.PanicLevel,
 			logrus.FatalLevel,
 			logrus.ErrorLevel,
-		})
+		}
 
+		sentryOpts := sentryOptions{
+			Dsn:              sentryURL,
+			AttachStacktrace: true,
+			BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+				// Remove the list of all packages of the service. It just spams Sentry.
+				event.Modules = make(map[string]string)
+				return event
+			},
+		}
+
+		hook, err := newSentryHook(sentryOpts, levelsToSendToSentry)
 		if err != nil {
 			return nil, err
 		}
@@ -127,9 +138,6 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 		if version != "" {
 			hook.SetRelease(version)
 		}
-
-		// default timeout of 100ms was too low for first event that is fired
-		hook.Timeout = 500 * time.Millisecond
 
 		basicLogger.Hooks.Add(hook)
 	}
