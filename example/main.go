@@ -46,7 +46,7 @@ func main() {
 	}
 	db := toolkit.MustSetupDB(dbConfig, obs.Logger)
 	defer func() {
-		if err := db.Close(); err != nil {
+		if err := toolkit.CloseDatabase(db); err != nil {
 			obs.Logger.WithError(err).Error("failed to close DB connection")
 		}
 	}()
