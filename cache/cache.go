@@ -1,12 +1,13 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 )
 
@@ -15,6 +16,10 @@ var (
 	ErrNotFound = errors.New("key not found in cache")
 	ErrNoTTLSet = errors.New("key does not have a TTL set")
 )
+
+// Since we currently don't want to pass a Go context to all the cache methods,
+// we use this dummy context instead.
+var ctx = context.TODO()
 
 // Cache defines basic cache operations including methods for setting and getting JSON objects.
 type Cache interface {
@@ -53,7 +58,7 @@ func NewRedis(redisHost string, redisPort string, prefix string) (*RedisClient, 
 	}
 
 	client := redis.NewClient(&opts)
-	_, err := client.Ping().Result()
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
 		return nil, fmt.Errorf("could not ping REDIS: %w", err)
 	}
@@ -70,14 +75,14 @@ func NewRedis(redisHost string, redisPort string, prefix string) (*RedisClient, 
 // Redis `SET key value [expiration]` command.
 // Use expiration for `SETEX`-like behavior. Zero expiration means the key has no expiration time.
 func (r *RedisClient) Set(key string, value string, expiration time.Duration) error {
-	return r.Redis.Set(r.prefixedKey(key), value, expiration).Err()
+	return r.Redis.Set(ctx, r.prefixedKey(key), value, expiration).Err()
 }
 
 // Get retrieves a value from REDIS.
 // If the client was set up with a prefix it will be added in front of the key.
 // If the value was not found ErrNotFound will be returned.
 func (r *RedisClient) Get(key string) (string, error) {
-	result, err := r.Redis.Get(r.prefixedKey(key)).Result()
+	result, err := r.Redis.Get(ctx, r.prefixedKey(key)).Result()
 	if err == redis.Nil {
 		return "", ErrNotFound
 	}
@@ -124,7 +129,7 @@ func (r *RedisClient) GetInt(key string) (int64, error) {
 // If the client was set up with a prefix it will be added in front of the key.
 // It returns the new (incremented) value.
 func (r *RedisClient) Incr(key string) (int64, error) {
-	return r.Redis.Incr(r.prefixedKey(key)).Result()
+	return r.Redis.Incr(ctx, r.prefixedKey(key)).Result()
 }
 
 // SetJSON saves JSON data as string to REDIS.
@@ -152,7 +157,7 @@ func (r *RedisClient) GetJSON(key string, result interface{}) error {
 // Del deletes a key value pair from REDIS.
 // If the client was set up with a prefix it will be added in front of the key.
 func (r *RedisClient) Del(key string) error {
-	return r.Redis.Del(r.prefixedKey(key)).Err()
+	return r.Redis.Del(ctx, r.prefixedKey(key)).Err()
 }
 
 // Close closes the connection to the REDIS server.
@@ -163,7 +168,7 @@ func (r *RedisClient) Close() error {
 // TTL returns remaining time to live of the given key found in REDIS.
 // If the key doesn't exist, it returns ErrNotFound.
 func (r *RedisClient) TTL(key string) (time.Duration, error) {
-	result, err := r.Redis.TTL(r.prefixedKey(key)).Result()
+	result, err := r.Redis.TTL(ctx, r.prefixedKey(key)).Result()
 	if err != nil {
 		return 0, err
 	}

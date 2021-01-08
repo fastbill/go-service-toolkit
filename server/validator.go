@@ -1,7 +1,7 @@
 package server
 
 import (
-	goValidator "github.com/go-playground/validator"
+	goValidator "github.com/go-playground/validator/v10"
 )
 
 // Validator points to 3rd party validator package (library) which actually does the real validation
