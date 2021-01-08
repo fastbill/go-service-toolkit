@@ -3,6 +3,7 @@ package observance
 import (
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -124,6 +125,9 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 			Dsn:              sentryURL,
 			AttachStacktrace: true,
 			BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+				for i := range event.Exception {
+					event.Exception[i].Stacktrace.Frames = filterVendorFrames(event.Exception[i].Stacktrace.Frames)
+				}
 				// Remove the list of all packages of the service. It just spams Sentry.
 				event.Modules = make(map[string]string)
 				return event
@@ -152,4 +156,19 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 		basicLogger: basicLogger,
 		logger:      logger,
 	}, nil
+}
+
+// filterVendorFrames removes frames that belong to the vendor folder from the stack trace.
+// That way, the Sentry GUI only shows the responsible line in the actual application code.
+// Our Sentry instance runs an older version of Sentry that does not yet provide the option
+// to enter stack trace filters in the settings.
+func filterVendorFrames(frames []sentry.Frame) []sentry.Frame {
+	filteredFrames := make([]sentry.Frame, 0, len(frames))
+	for _, frame := range frames {
+		if strings.Contains(frame.AbsPath, "vendor") {
+			continue
+		}
+		filteredFrames = append(filteredFrames, frame)
+	}
+	return filteredFrames
 }
