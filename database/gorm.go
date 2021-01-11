@@ -17,11 +17,7 @@ type GormWriter struct {
 
 // Printf writes a log entry.
 func (g GormWriter) Printf(msg string, data ...interface{}) {
-	fullMsg := msg
-	for _, entry := range data {
-		msg += fmt.Sprintf(", %+v", entry)
-	}
-	g.Logger.Info(fullMsg)
+	g.Logger.Debug(fmt.Sprintf(msg, data...))
 }
 
 // SetupGORM loads the ORM with the given configuration
@@ -45,7 +41,7 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to open DB connection: %w", err)
 	}
 
-	if config.Name != "" {
+	if dbName != "" {
 		// Ensure the DB exists.
 		db.Exec(fmt.Sprintf(config.createDatabaseQuery(), config.Name))
 		err = Close(db)
@@ -89,19 +85,16 @@ func Close(db *gorm.DB) error {
 	return dbConn.Close()
 }
 
-var stringToGormLogLevel = map[string]gormlogger.LogLevel{
-	"trace": gormlogger.Info,
-	"debug": gormlogger.Info,
-	"info":  gormlogger.Info,
-	"warn":  gormlogger.Warn,
-	"error": gormlogger.Error,
-}
-
 func createLogger(logger observance.Logger) gormlogger.Interface {
-	logLevel := stringToGormLogLevel[logger.Level()]
+	var logLevel gormlogger.LogLevel
+	if logger.Level() == "debug" || logger.Level() == "trace" {
+		logLevel = gormlogger.Info
+	} else {
+		logLevel = gormlogger.Silent
+	}
 
 	newLogger := gormlogger.New(
-		GormWriter{},
+		GormWriter{Logger: logger},
 		gormlogger.Config{
 			SlowThreshold: 500 * time.Millisecond,
 			LogLevel:      logLevel,
