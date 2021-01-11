@@ -5,22 +5,24 @@ go 1.15
 require (
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/fastbill/go-httperrors/v2 v2.0.1
-	github.com/getsentry/sentry-go v0.9.0
+	github.com/getsentry/sentry-go v0.2.1
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.4.4
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/joho/godotenv v1.3.0
-	github.com/labstack/echo/v4 v4.1.17
+	github.com/labstack/echo/v4 v4.1.6
 	github.com/labstack/gommon v0.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/pingcap/errors v0.11.4 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.9.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.6.1
+	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
