@@ -29,7 +29,7 @@ func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 		return
 	}
 
-	sql, err := ioutil.ReadFile(file)
+	sql, err := ioutil.ReadFile(file) // nolint: gosec
 	if err != nil {
 		panic(fmt.Errorf("failed to load seed file: %w", err))
 	}

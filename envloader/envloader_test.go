@@ -32,12 +32,14 @@ func TestOverwritingDefaultsWithCustomsSuccess(t *testing.T) {
 }
 
 func TestNotOverwritingExistingEnvs(t *testing.T) {
-	os.Setenv("ENVLOADER_TESTKEY1", "outerValue1")
-	os.Setenv("ENVLOADER_TESTKEY2", "outerValue2")
+	err := os.Setenv("ENVLOADER_TESTKEY1", "outerValue1")
+	assert.NoError(t, err)
+	err = os.Setenv("ENVLOADER_TESTKEY2", "outerValue2")
+	assert.NoError(t, err)
 
 	DefaultEnvFile = "production_missing.env"
 	StageEnv = "ENVLOADER_APP_ENV"
-	err := os.Setenv("ENVLOADER_APP_ENV", "teststage_success")
+	err = os.Setenv("ENVLOADER_APP_ENV", "teststage_success")
 	assert.NoError(t, err)
 
 	err = LoadEnvs("testdata")
