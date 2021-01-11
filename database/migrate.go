@@ -1,6 +1,8 @@
 package database
 
 import (
+	"errors"
+	"fmt"
 	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -8,7 +10,6 @@ import (
 	// import migrate mysql, postgres driver
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	"github.com/pkg/errors"
 
 	// import reading migrations from files
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -22,7 +23,7 @@ func EnsureMigrations(folder string, config Config) (returnErr error) {
 
 	fullPathToMigrations, err := filepath.Abs(folder)
 	if err != nil {
-		return errors.Wrap(err, "could not determine absolute path to migrations")
+		return fmt.Errorf("could not determine absolute path to migrations: %w", err)
 	}
 
 	migrations, err := migrate.New("file://"+fullPathToMigrations, databaseURL)

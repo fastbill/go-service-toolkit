@@ -3,12 +3,12 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/pkg/errors"
 )
 
 // Common errors that might be returned by the cache package.
