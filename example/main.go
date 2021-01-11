@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v3"
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
 	"github.com/labstack/echo/v4"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v3/observance"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"

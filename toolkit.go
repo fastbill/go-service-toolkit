@@ -1,11 +1,11 @@
 package toolkit
 
 import (
-	"github.com/fastbill/go-service-toolkit/v3/cache"
-	"github.com/fastbill/go-service-toolkit/v3/database"
-	"github.com/fastbill/go-service-toolkit/v3/envloader"
-	"github.com/fastbill/go-service-toolkit/v3/observance"
-	"github.com/fastbill/go-service-toolkit/v3/server"
+	"github.com/fastbill/go-service-toolkit/v4/cache"
+	"github.com/fastbill/go-service-toolkit/v4/database"
+	"github.com/fastbill/go-service-toolkit/v4/envloader"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
+	"github.com/fastbill/go-service-toolkit/v4/server"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

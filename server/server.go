@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/fastbill/go-httperrors/v2"
-	"github.com/fastbill/go-service-toolkit/v3/observance"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

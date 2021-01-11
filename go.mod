@@ -1,4 +1,4 @@
-module github.com/fastbill/go-service-toolkit/v3
+module github.com/fastbill/go-service-toolkit/v4
 
 go 1.15
 
