@@ -10,24 +10,13 @@ import (
 	gormlogger "gorm.io/gorm/logger"
 )
 
-// GormWriter implements the Writer interface for setting up the GORM logger.
-type GormWriter struct {
-	observance.Logger
-}
-
-// Printf writes a log entry.
-func (g GormWriter) Printf(msg string, data ...interface{}) {
-	g.Logger.Debug(fmt.Sprintf(msg, data...))
-}
-
 // SetupGORM loads the ORM with the given configuration
 // The setup includes sending a ping and creating the database if it didn't exist.
 // A logger will be activated if logLevel is 'debug'.
 func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
-	// We have two drivers prepared:
-	// 1) For connecting to the server (and maybe creating the database)
-	// 2) For connecting to the database directly.
 	dbName := config.Name
+
+	// First we connect without the database name so we can create the database if it does not exist.
 	config.Name = ""
 	driverWithoutDatabaseSet := config.Driver()
 
@@ -58,11 +47,6 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 		}
 	}
 
-	// TODO find out if we need this
-	// if logger.Level() == "debug" || logger.Level() == "trace" {
-	// 	db.Debug()
-	// }
-
 	dbConn, err := db.DB()
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve DB connection: %w", err)
@@ -75,7 +59,7 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 	return db, nil
 }
 
-// Close closes the database instance used by GORM.
+// Close closes the database connection(s) used by GORM.
 func Close(db *gorm.DB) error {
 	dbConn, err := db.DB()
 	if err != nil {
@@ -83,6 +67,16 @@ func Close(db *gorm.DB) error {
 	}
 
 	return dbConn.Close()
+}
+
+// GormWriter implements the Writer interface for setting up the GORM logger.
+type GormWriter struct {
+	observance.Logger
+}
+
+// Printf writes a log entry.
+func (g GormWriter) Printf(msg string, data ...interface{}) {
+	g.Logger.Debug(fmt.Sprintf(msg, data...))
 }
 
 func createLogger(logger observance.Logger) gormlogger.Interface {
@@ -96,9 +90,8 @@ func createLogger(logger observance.Logger) gormlogger.Interface {
 	newLogger := gormlogger.New(
 		GormWriter{Logger: logger},
 		gormlogger.Config{
-			SlowThreshold: 500 * time.Millisecond,
-			LogLevel:      logLevel,
-			Colorful:      false,
+			LogLevel: logLevel,
+			Colorful: false,
 		},
 	)
 

@@ -18,7 +18,7 @@ var (
 )
 
 // Since we currently don't want to pass a Go context to all the cache methods,
-// we use this dummy context instead.
+// we use this dummy context instead as recommended by the package autors.
 var ctx = context.TODO()
 
 // Cache defines basic cache operations including methods for setting and getting JSON objects.

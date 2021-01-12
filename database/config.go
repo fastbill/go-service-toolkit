@@ -26,7 +26,7 @@ type Config struct {
 	SSLMode  string // optional, only used for postgres
 }
 
-// Driver selects the correct DB driver and passes the connection details (DSN).
+// Driver selects the correct DB driver and passes the connection details (DSN). It does not yet open a database connection.
 func (c *Config) Driver() gorm.Dialector {
 	switch c.Dialect {
 	case DialectMysql:
