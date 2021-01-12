@@ -4,74 +4,96 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v3/observance"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 
-	// import migrate mysql, postgres driver
-	_ "github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 )
-
-// GormLogrus is a logrus logger that implements the gorm interface for logging.
-type GormLogrus struct {
-	observance.Logger
-}
-
-// Print implements the gorm.LogWriter interface, courtesy of https://gist.github.com/bnadland/2e4287b801a47dcfcc94.
-func (g GormLogrus) Print(v ...interface{}) {
-	if v[0] == "sql" {
-		g.WithFields(observance.Fields{"source": "go-service-toolkit/database"}).Debug(fmt.Sprintf("%v - %v", v[3], v[4]))
-	}
-	if v[0] == "log" {
-		g.WithFields(observance.Fields{"source": "go-service-toolkit/database"}).Debug(fmt.Sprintf("%v", v[2]))
-	}
-}
 
 // SetupGORM loads the ORM with the given configuration
 // The setup includes sending a ping and creating the database if it didn't exist.
 // A logger will be activated if logLevel is 'debug'.
 func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
-	// We have two connection strings:
-	// 1) For connecting to the server (and maybe creating the database)
-	// 2) For connecting to the database directly.
 	dbName := config.Name
-	config.Name = ""
-	connectionStringWithoutDatabase := config.ConnectionString()
-	config.Name = dbName
-	connectionString := config.ConnectionString()
 
-	// Open includes sending a ping.
-	db, err := gorm.Open(config.Dialect, connectionStringWithoutDatabase)
-	if err != nil {
-		return nil, err
+	// First we connect without the database name so we can create the database if it does not exist.
+	config.Name = ""
+	driverWithoutDatabaseSet := config.Driver()
+
+	gormConfig := &gorm.Config{
+		Logger: createLogger(logger),
 	}
 
-	if config.Name != "" {
+	// Open includes sending a ping.
+	db, err := gorm.Open(driverWithoutDatabaseSet, gormConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open DB connection: %w", err)
+	}
+
+	if dbName != "" {
+		config.Name = dbName
 		// Ensure the DB exists.
 		db.Exec(fmt.Sprintf(config.createDatabaseQuery(), config.Name))
-		err := db.Close()
+		err = Close(db)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to close DB connection: %w", err)
 		}
 
 		// Connect again with DB name.
-		db, err = gorm.Open(config.Dialect, connectionString)
+		driver := config.Driver()
+		db, err = gorm.Open(driver, gormConfig)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to open DB connection: %w", err)
 		}
 	}
 
-	if logger.Level() == "debug" || logger.Level() == "trace" {
-		db.LogMode(true)
-		gormLogger := GormLogrus{logger}
-		db.SetLogger(gormLogger)
-	} else {
-		db.LogMode(false)
+	dbConn, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve DB connection: %w", err)
 	}
 
 	// This setting addresses "invalid connection" errors in case of connections being closed by the DB server after the wait_timeout (8h).
 	// See https://github.com/go-sql-driver/mysql/issues/657.
-	db.DB().SetConnMaxLifetime(3500 * time.Second)
+	dbConn.SetConnMaxLifetime(time.Hour)
 
 	return db, nil
+}
+
+// Close closes the database connection(s) used by GORM.
+func Close(db *gorm.DB) error {
+	dbConn, err := db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve DB connection: %w", err)
+	}
+
+	return dbConn.Close()
+}
+
+// GormWriter implements the Writer interface for setting up the GORM logger.
+type GormWriter struct {
+	observance.Logger
+}
+
+// Printf writes a log entry.
+func (g GormWriter) Printf(msg string, data ...interface{}) {
+	g.Logger.Debug(fmt.Sprintf(msg, data...))
+}
+
+func createLogger(logger observance.Logger) gormlogger.Interface {
+	var logLevel gormlogger.LogLevel
+	if logger.Level() == "debug" || logger.Level() == "trace" {
+		logLevel = gormlogger.Info
+	} else {
+		logLevel = gormlogger.Silent
+	}
+
+	newLogger := gormlogger.New(
+		GormWriter{Logger: logger},
+		gormlogger.Config{
+			LogLevel: logLevel,
+			Colorful: false,
+		},
+	)
+
+	return newLogger
 }

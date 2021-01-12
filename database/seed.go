@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // MustApplyDatabaseSeed applies all SQL queries from the given file to the currently active database.
@@ -21,7 +21,7 @@ func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 	result := struct {
 		Rows uint64
 	}{}
-	if err := db.Raw(applySeedCheckSQL, db.Dialect().CurrentDatabase()).Scan(&result).Error; err != nil {
+	if err := db.Raw(applySeedCheckSQL).Scan(&result).Error; err != nil {
 		panic(fmt.Errorf("failed to check whether seed should be applied: %w", err))
 	}
 
@@ -29,7 +29,7 @@ func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 		return
 	}
 
-	sql, err := ioutil.ReadFile(file)
+	sql, err := ioutil.ReadFile(file) // nolint: gosec
 	if err != nil {
 		panic(fmt.Errorf("failed to load seed file: %w", err))
 	}

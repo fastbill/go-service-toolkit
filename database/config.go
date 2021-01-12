@@ -1,6 +1,12 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
 
 const (
 	// DialectMysql is the mysql dialect.
@@ -20,20 +26,22 @@ type Config struct {
 	SSLMode  string // optional, only used for postgres
 }
 
-// ConnectionString returns a valid string for sql.Open.
-func (c *Config) ConnectionString() string {
+// Driver selects the correct DB driver and passes the connection details (DSN). It does not yet open a database connection.
+func (c *Config) Driver() gorm.Dialector {
 	switch c.Dialect {
 	case DialectMysql:
-		return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=UTC&multiStatements=true",
+		dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=UTC&multiStatements=true",
 			c.User, c.Password, c.Host, c.Port, c.Name)
+		return mysql.Open(dsn)
 	case DialectPostgres:
 		dbName := c.Name
 		if dbName == "" {
 			// We probably don't have a DB yet, let's connect to `postgres` instead
 			dbName = "postgres"
 		}
-		return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 			c.Host, c.Port, c.User, c.Password, dbName, c.SSLMode)
+		return postgres.Open(dsn)
 	default:
 		panic("Unknown database dialect: " + c.Dialect)
 	}

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v3"
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -46,7 +46,7 @@ func main() {
 	}
 	db := toolkit.MustSetupDB(dbConfig, obs.Logger)
 	defer func() {
-		if err := db.Close(); err != nil {
+		if err := toolkit.CloseDatabase(db); err != nil {
 			obs.Logger.WithError(err).Error("failed to close DB connection")
 		}
 	}()

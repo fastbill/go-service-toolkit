@@ -13,7 +13,7 @@ You need to tell the envloader in which folder to look for the `.env` files. By 
 ## Usage
 ```go
 import (
-	toolkit "github.com/fastbill/go-service-toolkit/v3"
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
 )
 
 
@@ -35,7 +35,7 @@ The `Obs` struct has a `PanicRecover` method that can be used as deferred functi
 import (
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v3"
+	"github.com/fastbill/go-service-toolkit/v4"
 )
 
 func main() {
@@ -86,7 +86,7 @@ Additionally `MustEnsureDBMigrations` runs all migrations from the given folder 
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v3"
+    "github.com/fastbill/go-service-toolkit/v4"
 )
 
 func main() {
@@ -115,7 +115,7 @@ The function `MustNewCache` sets up a new REDIS client. A prefix can be provided
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v3"
+    "github.com/fastbill/go-service-toolkit/v4"
 )
 
 func main() {
@@ -134,7 +134,7 @@ The server package sets up an [Echo](https://echo.labstack.com/) server that inc
 ## Usage
 ```go
 import (
-    "github.com/fastbill/go-service-toolkit/v3/server"
+    "github.com/fastbill/go-service-toolkit/v4/server"
 )
 
 func main() {
@@ -222,7 +222,7 @@ As response, the `CallHandler` method returns the error that the echo handler re
 ```go
 import (
 	"testing"
-    "github.com/fastbill/go-service-toolkit/v3/handlertest"
+    "github.com/fastbill/go-service-toolkit/v4/handlertest"
 )
 
 func TestMyHandler(t *testing.T) {
@@ -239,7 +239,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fastbill/go-service-toolkit/v3/handlertest"
+	"github.com/fastbill/go-service-toolkit/v4/handlertest"
 	"github.com/labstack/echo/v4"
 )
 

@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v3"
-	"github.com/fastbill/go-service-toolkit/v3/observance"
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

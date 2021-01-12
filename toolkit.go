@@ -1,14 +1,14 @@
 package toolkit
 
 import (
-	"github.com/fastbill/go-service-toolkit/v3/cache"
-	"github.com/fastbill/go-service-toolkit/v3/database"
-	"github.com/fastbill/go-service-toolkit/v3/envloader"
-	"github.com/fastbill/go-service-toolkit/v3/observance"
-	"github.com/fastbill/go-service-toolkit/v3/server"
+	"github.com/fastbill/go-service-toolkit/v4/cache"
+	"github.com/fastbill/go-service-toolkit/v4/database"
+	"github.com/fastbill/go-service-toolkit/v4/envloader"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
+	"github.com/fastbill/go-service-toolkit/v4/server"
 
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 // MustLoadEnvs checks and loads environment variables from the given folder.
@@ -69,4 +69,10 @@ func MustNewServer(obs *observance.Obs, CORSOrigins string, timeout ...string) (
 		panic(err)
 	}
 	return echoServer, connectionsClosed
+}
+
+// CloseDatabase closes the database instance used by GORM.
+// db.Close() was removed in GORM v2.
+func CloseDatabase(db *gorm.DB) error {
+	return database.Close(db)
 }
