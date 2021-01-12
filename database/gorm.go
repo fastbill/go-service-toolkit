@@ -42,6 +42,7 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 	}
 
 	if dbName != "" {
+		config.Name = dbName
 		// Ensure the DB exists.
 		db.Exec(fmt.Sprintf(config.createDatabaseQuery(), config.Name))
 		err = Close(db)
@@ -50,7 +51,6 @@ func SetupGORM(config Config, logger observance.Logger) (*gorm.DB, error) {
 		}
 
 		// Connect again with DB name.
-		config.Name = dbName
 		driver := config.Driver()
 		db, err = gorm.Open(driver, gormConfig)
 		if err != nil {
