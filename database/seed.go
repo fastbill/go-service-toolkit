@@ -21,7 +21,7 @@ func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 	result := struct {
 		Rows uint64
 	}{}
-	if err := db.Raw(applySeedCheckSQL).Scan(&result).Error; err != nil {
+	if err := db.Raw(applySeedCheckSQL, db.Migrator().CurrentDatabase()).Scan(&result).Error; err != nil {
 		panic(fmt.Errorf("failed to check whether seed should be applied: %w", err))
 	}
 
