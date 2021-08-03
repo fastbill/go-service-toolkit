@@ -266,7 +266,7 @@ func TestMyHandler(t *testing.T) {
 	}
 
 	params := &handlertest.Params{
-		Route:  "/?query1=value1",
+		Route:  "/some/path?query1=value1",
 		Method: "PUT",
 		Body:   `{"id":123}`,
 		Headers: map[string]string{
