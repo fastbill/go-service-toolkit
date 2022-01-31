@@ -24,7 +24,7 @@ func main() {
 ```
 
 # Observability - Logging and Metrics
-We bundle logging and capturing custom metrics in one `Obs` struct (short for observance). In the future tools for tracing might also be added. Due to the bundling only one struct needs to be passed around in the application and not 2 or 3. Additionally the observance struct provides a method to create request specific observance instances that automatically add url, path and request id to every log message created with that instance. It also adds the request headers specified via `LoggedHeaders` to the logger with the given field name when the method `CopyWithRequest` is used.
+We bundle logging and capturing custom metrics in one `Obs` struct (short for observance). In the future tools for tracing might also be added. Due to the bundling only one struct needs to be passed around in the application and not 2 or 3. Additionally the observance struct provides a method to create request specific observance instances that automatically add full url, method and request id to every log message created with that instance. It also adds the request headers specified via `LoggedHeaders` to the logger with the given field name when the method `CopyWithRequest` is used.
 
 We use [Logrus](https://github.com/sirupsen/logrus) as logger under the hood but it is wrapped with a custom interface so we do not depend directly on the interface provided by Logrus. Logs will be written to StdOut in JSON format. If you pass a Sentry URL and version all log entries with level error or higher will be pushed to Sentry. This is done via hooks in Logrus.
 
