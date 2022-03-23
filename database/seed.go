@@ -12,20 +12,20 @@ import (
 func MustApplyDatabaseSeed(file string, db *gorm.DB) {
 	applySeedCheckSQL := `
 		SELECT
-			SUM(TABLE_ROWS) AS rows
+			SUM(TABLE_ROWS) AS dbrows
 		FROM
 			information_schema.TABLES
 		WHERE
 			TABLE_SCHEMA = ? AND TABLE_NAME NOT IN ('schema_migrations')
 	`
 	result := struct {
-		Rows uint64
+		dbrows uint64
 	}{}
 	if err := db.Raw(applySeedCheckSQL, db.Migrator().CurrentDatabase()).Scan(&result).Error; err != nil {
 		panic(fmt.Errorf("failed to check whether seed should be applied: %w", err))
 	}
 
-	if result.Rows > 0 {
+	if result.dbrows > 0 {
 		return
 	}
 
