@@ -46,6 +46,7 @@ func New(obs *observance.Obs, CORSOrigins string, timeout ...string) (*echo.Echo
 	echoServer.Logger = Logger{obs.Logger}
 	echoServer.DisableHTTP2 = true
 	echoServer.Pre(middleware.RemoveTrailingSlash())
+	echoServer.Use(middleware.Secure())
 	echoServer.Use(middleware.Recover())
 
 	if CORSOrigins != "" {
