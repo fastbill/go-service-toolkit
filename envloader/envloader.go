@@ -28,38 +28,51 @@ func LoadEnvs(folderPath string) error {
 	customConfigPath := path.Join(folderPath, stage+".env")
 	defaultConfigPath := path.Join(folderPath, DefaultEnvFile)
 
-	missingEnvs := []string{}
-	combinedEnvMap, err := createCombinedEnvMap(customConfigPath, defaultConfigPath)
+	err := checkForMissingEnvs(customConfigPath, defaultConfigPath)
 	if err != nil {
 		return err
 	}
 
-	for envName, value := range combinedEnvMap {
-		if value == "" && os.Getenv(envName) == "" {
+	return godotenv.Load(customConfigPath, defaultConfigPath)
+}
+
+// checkForMissingEnvs errors if an env was defined in the default but not set in
+// either the default file, custom config file or environment variables.
+// Returns nil otherwise.
+func checkForMissingEnvs(customConfigPath string, defaultConfigPath string) error {
+	envMapCustom, err := godotenv.Read(customConfigPath)
+	if err != nil {
+		return fmt.Errorf("error reading custom config file: %w", err)
+	}
+	envMapDefault, err := godotenv.Read(defaultConfigPath)
+	if err != nil {
+		return fmt.Errorf("error reading default config file: %w", err)
+	}
+
+	fmt.Println(envMapCustom)
+	fmt.Println(envMapDefault)
+
+	envMapCombined := map[string]string{}
+	for key, value := range envMapCustom {
+		envMapCombined[key] = value
+	}
+
+	for key, value := range envMapDefault {
+		if envMapCombined[key] == "" {
+			envMapCombined[key] = value
+		}
+	}
+
+	missingEnvs := []string{}
+	for envName, value := range envMapCombined {
+		_, keyPresentInCustomEnvs := envMapCustom[envName]
+		if value == "" && os.Getenv(envName) == "" && !keyPresentInCustomEnvs {
 			missingEnvs = append(missingEnvs, envName)
 		}
 	}
 	if len(missingEnvs) > 0 {
 		return fmt.Errorf("environment variables missing: %v", missingEnvs)
 	}
-	return godotenv.Load(customConfigPath, defaultConfigPath)
-}
 
-func createCombinedEnvMap(customConfigPath string, defaultConfigPath string) (map[string]string, error) {
-	envMapCustom, err := godotenv.Read(customConfigPath)
-	if err != nil {
-		return nil, err
-	}
-	envMapDefault, err := godotenv.Read(defaultConfigPath)
-	if err != nil {
-		return nil, err
-	}
-
-	envMapCombined := envMapCustom
-	for key, value := range envMapDefault {
-		if envMapCombined[key] == "" {
-			envMapCombined[key] = value
-		}
-	}
-	return envMapCombined, nil
+	return nil
 }
