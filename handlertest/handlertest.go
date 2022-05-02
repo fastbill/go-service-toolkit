@@ -52,6 +52,7 @@ type PathParam struct {
 // CallHandler calls the given handler with the provided settings.
 // Afterwards it calls "AssertExpectations" of the provided mocks.
 func (s *Suite) CallHandler(t *testing.T, handlerFunc echo.HandlerFunc, params *Params, mocks []MockAsserter) (*httptest.ResponseRecorder, error) {
+	t.Helper()
 	if handlerFunc == nil {
 		return nil, errors.New("error in test setup, handler missing")
 	}
