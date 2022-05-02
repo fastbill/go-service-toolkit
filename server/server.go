@@ -67,7 +67,7 @@ func New(obs *observance.Obs, CORSOrigins string, timeout ...string) (*echo.Echo
 
 	// Set up graceful shutdown.
 	connsClosed := make(chan struct{})
-	sc := make(chan os.Signal)
+	sc := make(chan os.Signal, 1)
 	go func() {
 		s := <-sc
 		obs.Logger.WithField("signal", s).Warn("shutting down gracefully")
