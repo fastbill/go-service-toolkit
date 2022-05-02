@@ -49,19 +49,7 @@ func checkForMissingEnvs(customConfigPath string, defaultConfigPath string) erro
 		return fmt.Errorf("error reading default config file: %w", err)
 	}
 
-	fmt.Println(envMapCustom)
-	fmt.Println(envMapDefault)
-
-	envMapCombined := map[string]string{}
-	for key, value := range envMapCustom {
-		envMapCombined[key] = value
-	}
-
-	for key, value := range envMapDefault {
-		if envMapCombined[key] == "" {
-			envMapCombined[key] = value
-		}
-	}
+	envMapCombined := combineMaps(envMapDefault, envMapCustom)
 
 	missingEnvs := []string{}
 	for envName, value := range envMapCombined {
@@ -75,4 +63,19 @@ func checkForMissingEnvs(customConfigPath string, defaultConfigPath string) erro
 	}
 
 	return nil
+}
+
+func combineMaps(envMapDefault, envMapOverwrite map[string]string) map[string]string {
+	envMapCombined := map[string]string{}
+	for key, value := range envMapOverwrite {
+		envMapCombined[key] = value
+	}
+
+	for key, value := range envMapDefault {
+		if envMapCombined[key] == "" {
+			envMapCombined[key] = value
+		}
+	}
+
+	return envMapCombined
 }

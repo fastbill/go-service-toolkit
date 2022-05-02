@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v4"
-	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 )
 
 // Suite holds the general properties to run handler tests.

@@ -5,8 +5,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/gommon/log"
+
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 )
 
 // Logger is a wrapper for the logrus fieldlogger that fulfills the echo logger interface
