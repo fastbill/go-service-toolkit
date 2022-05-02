@@ -96,8 +96,8 @@ func (l *LogrusLogger) SetOutput(w io.Writer) {
 
 // NewLogrus creates a Logrus logger that fulfils the Logger interface with Sentry integration.
 // All log messages will contain app name, pid and hostname/containerID.
-func NewLogrus(logLevel string, appName string, sentryURL string, version string) (Logger, error) {
-	logrusLogLevel, err := logrus.ParseLevel(logLevel)
+func NewLogrus(config Config) (Logger, error) {
+	logrusLogLevel, err := logrus.ParseLevel(config.LogLevel)
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +108,18 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 	}
 
 	basicLogger := &logrus.Logger{
-		Out:       os.Stdout,
-		Formatter: &logrus.JSONFormatter{TimestampFormat: time.RFC3339Nano},
-		Hooks:     make(logrus.LevelHooks),
-		Level:     logrusLogLevel,
+		Out:   os.Stdout,
+		Hooks: make(logrus.LevelHooks),
+		Level: logrusLogLevel,
 	}
 
-	if sentryURL != "" {
+	if config.Environment == "dev" {
+		basicLogger.Formatter = &logrus.TextFormatter{}
+	} else {
+		basicLogger.Formatter = &logrus.JSONFormatter{TimestampFormat: time.RFC3339Nano}
+	}
+
+	if config.SentryURL != "" {
 		levelsToSendToSentry := []logrus.Level{
 			logrus.PanicLevel,
 			logrus.FatalLevel,
@@ -122,7 +127,7 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 		}
 
 		sentryOpts := sentryOptions{
-			Dsn:              sentryURL,
+			Dsn:              config.SentryURL,
 			AttachStacktrace: true,
 			BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
 				for i := range event.Exception {
@@ -139,15 +144,15 @@ func NewLogrus(logLevel string, appName string, sentryURL string, version string
 			return nil, err
 		}
 
-		if version != "" {
-			hook.SetRelease(version)
+		if config.Version != "" {
+			hook.SetRelease(config.Version)
 		}
 
 		basicLogger.Hooks.Add(hook)
 	}
 
 	logger := basicLogger.WithFields(logrus.Fields{
-		"name":     appName,
+		"name":     config.AppName,
 		"pid":      os.Getpid(),
 		"hostname": hostname,
 	})
