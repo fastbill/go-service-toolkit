@@ -11,9 +11,10 @@ import (
 	"time"
 
 	"github.com/fastbill/go-httperrors/v2"
-	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 )
 
 const defaultTimeout = 30 * time.Second
@@ -37,15 +38,25 @@ func New(obs *observance.Obs, CORSOrigins string, timeout ...string) (*echo.Echo
 	// Configure Echo.
 	echoServer.HideBanner = true
 	echoServer.HidePort = true
+
 	echoServer.Server.ReadTimeout = timeoutDuration
 	echoServer.Server.WriteTimeout = timeoutDuration
 	echoServer.Server.ReadHeaderTimeout = timeoutDuration
+	defaultIdleTimeout := 120 * time.Second
+	if defaultIdleTimeout > timeoutDuration {
+		echoServer.Server.IdleTimeout = defaultIdleTimeout
+	}
+	// By default, the value of ReadTimeout is used.
+	// See https://pkg.go.dev/net/http#Server
+
 	echoServer.HTTPErrorHandler = HTTPErrorHandler(obs)
 	echoServer.Binder = &bindValidator{}
 	echoServer.Validator = NewValidator()
 	echoServer.Logger = Logger{obs.Logger}
 	echoServer.DisableHTTP2 = true
+
 	echoServer.Pre(middleware.RemoveTrailingSlash())
+	echoServer.Use(middleware.Secure())
 	echoServer.Use(middleware.Recover())
 
 	if CORSOrigins != "" {
@@ -57,7 +68,7 @@ func New(obs *observance.Obs, CORSOrigins string, timeout ...string) (*echo.Echo
 
 	// Set up graceful shutdown.
 	connsClosed := make(chan struct{})
-	sc := make(chan os.Signal)
+	sc := make(chan os.Signal, 1)
 	go func() {
 		s := <-sc
 		obs.Logger.WithField("signal", s).Warn("shutting down gracefully")

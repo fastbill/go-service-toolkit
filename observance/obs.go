@@ -13,6 +13,7 @@ type Config struct {
 	LogLevel             string
 	SentryURL            string
 	Version              string
+	Environment          string
 	MetricsURL           string
 	MetricsFlushInterval time.Duration
 	// LoggedHeaders is map of header names and log field names. If those headers are present in the request,
@@ -34,7 +35,7 @@ type Obs struct {
 // Optional: If a Sentry URL was provided logs with level error will be sent to Sentry.
 // Optional: If a metrics URL was provided a Prometheus Pushgateway metrics can be captured.
 func NewObs(config Config) (*Obs, error) {
-	log, err := NewLogrus(config.LogLevel, config.AppName, config.SentryURL, config.Version)
+	log, err := NewLogrus(config)
 	if err != nil {
 		return nil, err
 	}

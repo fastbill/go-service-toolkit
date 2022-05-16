@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
-	toolkit "github.com/fastbill/go-service-toolkit/v4"
-	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	toolkit "github.com/fastbill/go-service-toolkit/v4"
+	"github.com/fastbill/go-service-toolkit/v4/observance"
 )
 
 // Suite holds the general properties to run handler tests.
@@ -52,6 +53,7 @@ type PathParam struct {
 // CallHandler calls the given handler with the provided settings.
 // Afterwards it calls "AssertExpectations" of the provided mocks.
 func (s *Suite) CallHandler(t *testing.T, handlerFunc echo.HandlerFunc, params *Params, mocks []MockAsserter) (*httptest.ResponseRecorder, error) {
+	t.Helper()
 	if handlerFunc == nil {
 		return nil, errors.New("error in test setup, handler missing")
 	}
