@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"runtime"
 
 	"github.com/golang-migrate/migrate/v4"
 
@@ -26,7 +27,11 @@ func EnsureMigrations(folder string, config Config) (returnErr error) {
 		return fmt.Errorf("could not determine absolute path to migrations: %w", err)
 	}
 
-	migrations, err := migrate.New("file://"+fullPathToMigrations, databaseURL)
+	migratePathPrefix := "file:"
+	if runtime.GOOS != "windows" {
+		migratePathPrefix += "//"
+	}
+	migrations, err := migrate.New(migratePathPrefix+fullPathToMigrations, databaseURL)
 	if err != nil {
 		return err
 	}
