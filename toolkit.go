@@ -1,14 +1,14 @@
 package toolkit
 
 import (
+	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
+
 	"github.com/fastbill/go-service-toolkit/v4/cache"
 	"github.com/fastbill/go-service-toolkit/v4/database"
 	"github.com/fastbill/go-service-toolkit/v4/envloader"
 	"github.com/fastbill/go-service-toolkit/v4/observance"
 	"github.com/fastbill/go-service-toolkit/v4/server"
-
-	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 // MustLoadEnvs checks and loads environment variables from the given folder.
@@ -25,7 +25,7 @@ type ObsConfig = observance.Config
 // DBConfig aliases database.Config so it will not be necessary to import the database package for the setup process.
 type DBConfig = database.Config
 
-// MustNewObs creates a new observalibity instance..
+// MustNewObs creates a new observability instance.
 // It includes the properties "Logger", a Logrus logger that fulfils the Logger interface
 // and "Metrics", a Prometheus Client that fulfils the Measurer interface.
 func MustNewObs(config ObsConfig) *observance.Obs {
