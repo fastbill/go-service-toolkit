@@ -23,7 +23,7 @@ func MustApplyDatabaseSeed(file string, db *gorm.DB, excludedTables ...[]string)
 
 	applySeedCheckSQL := `
 		SELECT
-			SUM(TABLE_ROWS) AS rows
+			SUM(TABLE_ROWS) AS 'rows'
 		FROM
 			information_schema.TABLES
 		WHERE
