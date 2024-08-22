@@ -13,6 +13,8 @@ const (
 	DialectMysql = "mysql"
 	// DialectPostgres is the postgres dialect.
 	DialectPostgres = "postgres"
+	// UnknownDialect is unknown.
+	UnknownDialect = "Unknown database dialect: "
 )
 
 // Config holds all configuration values for the DB setup
@@ -43,7 +45,7 @@ func (c *Config) Driver() gorm.Dialector {
 			c.Host, c.Port, c.User, c.Password, dbName, c.SSLMode)
 		return postgres.Open(dsn)
 	default:
-		panic("Unknown database dialect: " + c.Dialect)
+		panic(UnknownDialect + c.Dialect)
 	}
 }
 
@@ -57,7 +59,7 @@ func (c *Config) MigrationURL() string {
 		return fmt.Sprintf("%s:%s@%s:%s/%s?sslmode=%s",
 			c.User, c.Password, c.Host, c.Port, c.Name, c.SSLMode)
 	default:
-		panic("Unknown database dialect: " + c.Dialect)
+		panic(UnknownDialect + c.Dialect)
 	}
 }
 
@@ -70,6 +72,6 @@ func (c *Config) createDatabaseQuery() string {
 	case DialectPostgres:
 		return `CREATE DATABASE "%s" ENCODING=UTF8;`
 	default:
-		panic("Unknown database dialect: " + c.Dialect)
+		panic(UnknownDialect + c.Dialect)
 	}
 }
